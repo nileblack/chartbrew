@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "db:migrate": "cd models && npx sequelize-cli db:migrate",
     "precommit": "lint-staged",
-    "postinstall": "npx playwright install && npx playwright install-deps"
+    "postinstall": ""
   },
   "author": {
     "email": "hello@chartbrew.com",
