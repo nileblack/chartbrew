@@ -20,9 +20,9 @@ class OpenAIConnector {
 
     this.defaultConfig = {
       model: settings.openai.model,
-      max_completion_tokens: parseInt(settings.openai.maxTokens, 10) || 2000,
+        max_completion_tokens: parseInt(settings.openai.maxTokens, 10) || 4000,
     };
-
+      console.log(this.defaultConfig);
     this.initialized = false;
   }
 
@@ -39,12 +39,56 @@ class OpenAIConnector {
       
       // 使用 vectorStore 的 searchRelevant 方法
       const relevantDocs = await vectorStore.searchRelevant(description);
-      const context = relevantDocs.map(doc => doc.pageContent).join('\n\n');
-      
+        const tableSummary = [];
+        const getTableFields = (schema, tableName) => {
+            const tableInfo = schema.description[tableName];
+            return Object.entries(tableInfo).map(([fieldName, info]) => ({
+                name: fieldName,
+                type: info.type,
+                required: !info.allowNull,
+                isPrimary: info.primaryKey,
+                isAutoIncrement: info.autoIncrement,
+            }));
+        };
+
+
+        // Step 1: 首先用一个轻量级的请求来确定需要用到哪些表
+        const tableIdentificationResponse = await this.openai.chat.completions.create({
+            ...this.defaultConfig,
+            messages: [
+                {
+                    role: "user",
+                    content: `Given these available tables: ${Object.keys(schema.tables).join(', ')}\n\n` +
+                        `For this request: "${description}"\n\n` +
+                        `Return only a JSON array of table names that would be needed to fulfill this request. don't return table name out of what i give you. Example: ["users", "orders"]`
+                }
+            ],
+        });
+
+        // 解析需要用到的表
+        let relevantTables;
+        try {
+            const content = tableIdentificationResponse.choices[0].message.content.trim()
+                .replace(/```json\n?/, '').replace(/```/, '');
+            relevantTables = JSON.parse(content);
+        } catch (error) {
+            console.error("[Parse Error]", error);
+            relevantTables = Object.keys(schema.tables); // 如果解析失败，使用所有表作为后备方案
+        }
+
+        console.log(relevantTables);
+
+        for (const [idx, tableName] of relevantTables) {
+            const fields = getTableFields(schema, tableName);
+            tableSummary.push(`TABLE ${tableName} 
+COLUMNS: ${fields.map(f => `${f.name} ${f.type} ${f.isPrimary ? ' PRIMARY KEY' : ''}`).join('\n')}`);
+        }
+        const tableSummaryString = tableSummary.join('\n\n');
+
       // 构建提示
       const prompt = `Based on the following relevant schema information:
 
-${context}
+${tableSummaryString}
 
 Generate a SQL query for this request: ${description}
 
@@ -53,18 +97,22 @@ Please ensure the query:
 1. Uses only the tables and fields mentioned in the schema
 2. Includes proper JOIN conditions if multiple tables are needed
 3. Uses appropriate WHERE clauses for filtering
-4. Returns a list of SQL queries in the following JSON format:
+4. Verifies that all fields used in SELECT, WHERE, JOIN, GROUP BY, ORDER BY clauses exist in their respective tables
+5. Returns a list of SQL queries in the following JSON format:
 [
   {
     "description": "A clear explanation of what this query does",
-    "sql": "The SQL query statement",
+    "sql": "The SQL query statement", 
     "tables": ["list", "of", "tables", "used"],
     "confidence": 0.95  // A number between 0 and 1 indicating how well this query matches the request
   },
   ...
 ]
 Please return a JSON array with 2-3 valid SQL queries that best match the request, ordered from most relevant to least relevant.
-IMPORTANT: Your response must be a valid JSON array containing 2-3 SQL query objects.
+IMPORTANT: 
+- Your response must be a valid JSON array containing 2-3 SQL query objects
+- Verify that every field referenced in the queries exists in the schema tables
+- Include the fields object to document which fields are used from each table
 `;
 
       console.log("[OpenAI Request]", {

@@ -77,7 +77,6 @@ ${fields.map(f =>
   `- ${f.name} ${f.type}${f.required ? ' NOT NULL' : ''}${f.isPrimary ? ' PRIMARY KEY' : ''}${f.isAutoIncrement ? ' AUTO_INCREMENT' : ''}`
 ).join('\n')}
       `.trim();
-
       documents.push({
         pageContent: tableDoc,
         metadata: { 
@@ -85,6 +84,7 @@ ${fields.map(f =>
           type: 'table_schema'
         }
       });
+      console.log(tableDoc);
 
       // SQL 示例文档
       const sqlExamples = `
@@ -102,7 +102,7 @@ Example queries:
           type: 'sql_examples'
         }
       });
-
+      console.log(sqlExamples);
       // 字段用途文档
       const fieldsDoc = `
 Table ${tableName} field purposes:
@@ -113,7 +113,7 @@ ${fields.map(f => `${f.name}: ${f.type} - Used for storing ${f.name.toLowerCase(
                    f.type.includes('DECIMAL') ? 'decimal number' : 'data'}`
 ).join('\n')}
       `.trim();
-
+      console.log(fieldsDoc);
       documents.push({
         pageContent: fieldsDoc,
         metadata: { 
