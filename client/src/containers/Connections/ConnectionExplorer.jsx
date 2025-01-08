@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Spinner, Card } from "@nextui-org/react";
+import { Spinner, Card, Input } from "@nextui-org/react";
 import {
   Table,
   TableHeader,
@@ -13,7 +13,7 @@ import {
 import { selectConnections, getConnection } from "../../slices/connection";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
-import { LuCircleArrowLeft } from "react-icons/lu";
+import { LuCircleArrowLeft, LuSearch } from "react-icons/lu";
 import { Spacer } from "@nextui-org/react";
 import { CardHeader, CardBody } from "@nextui-org/react";
 
@@ -23,6 +23,7 @@ function ConnectionExplorer() {
   const connections = useSelector(selectConnections);
   const [loading, setLoading] = useState(true);
   const [selectedTable, setSelectedTable] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Get current connection
   const connection = connections?.find((c) => c.id === parseInt(params.connectionId, 10));
@@ -48,6 +49,10 @@ function ConnectionExplorer() {
     }
   }, [params.teamId, params.connectionId]);
 
+  const filteredTables = connection?.schema?.tables.filter(tableName =>
+    tableName.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
   if (!params.teamId || !params.connectionId) {
     return <div>Missing required parameters</div>;
   }
@@ -72,10 +77,24 @@ function ConnectionExplorer() {
           ) : (
             <div className="flex h-[calc(100vh-200px)]">
               {/* Left side - Table list */}
-              <div className="w-64 border-r border-content3 p-4 overflow-y-auto">
+              <div className="w-64 border-r border-content3 p-4">
                 <h2 className="text-xl font-semibold mb-4">Tables</h2>
-                <div className="space-y-2">
-                  {connection.schema?.tables.map((tableName) => (
+                
+                <div className="mb-4">
+                  <Input
+                    type="text"
+                    placeholder="Search tables..."
+                    variant="bordered"
+                    endContent={<LuSearch />}
+                    className="max-w-[300px]"
+                    labelPlacement="outside"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2 overflow-y-auto h-[calc(100vh-340px)] pr-2 custom-scrollbar">
+                  {filteredTables.map((tableName) => (
                     <div
                       key={tableName}
                       className={`p-2 rounded cursor-pointer hover:bg-content2 ${
