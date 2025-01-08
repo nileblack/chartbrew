@@ -198,11 +198,12 @@ function ConnectionExplorer() {
                     </div>
                     
                     {tableDescription && (
-                      <Accordion className="mb-4" defaultExpandedKeys={["description"]}>
-                        <AccordionItem 
-                          key="description"
-                          title="Table Description" 
-                          className="bg-content2"
+                      <Accordion className="mb-4">
+                        <AccordionItem
+                          key="table-description"
+                          aria-label="Table Description"
+                          title="Table Description"
+                          className="bg-content1"
                         >
                           <div 
                             className="prose prose-sm dark:prose-invert max-w-none markdown-content"
@@ -213,28 +214,34 @@ function ConnectionExplorer() {
                     )}
 
                     <Card>
-                      <Table aria-label={`${selectedTable} structure`}>
-                        <TableHeader>
-                          <TableColumn>Field</TableColumn>
-                          <TableColumn>Type</TableColumn>
-                          <TableColumn>Nullable</TableColumn>
-                          <TableColumn>Default</TableColumn>
-                          <TableColumn>Primary Key</TableColumn>
-                          <TableColumn>Comment</TableColumn>
-                        </TableHeader>
-                        <TableBody>
-                          {Object.entries(connection.schema.description[selectedTable]).map(([fieldName, field]) => (
-                            <TableRow key={fieldName}>
-                              <TableCell>{fieldName}</TableCell>
-                              <TableCell>{field.type}</TableCell>
-                              <TableCell>{field.allowNull ? "Yes" : "No"}</TableCell>
-                              <TableCell>{field.defaultValue || "-"}</TableCell>
-                              <TableCell>{field.primaryKey ? "Yes" : "No"}</TableCell>
-                              <TableCell>{field.comment || "-"}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                      <CardBody>
+                        <Table 
+                          aria-label={`${selectedTable} structure`}
+                          removeWrapper
+                          className="min-w-full"
+                        >
+                          <TableHeader>
+                            <TableColumn>Field</TableColumn>
+                            <TableColumn>Type</TableColumn>
+                            <TableColumn>Nullable</TableColumn>
+                            <TableColumn>Default</TableColumn>
+                            <TableColumn>Primary Key</TableColumn>
+                            <TableColumn>Comment</TableColumn>
+                          </TableHeader>
+                          <TableBody>
+                            {Object.entries(connection.schema.description[selectedTable]).map(([fieldName, field]) => (
+                              <TableRow key={fieldName}>
+                                <TableCell>{fieldName}</TableCell>
+                                <TableCell>{field.type}</TableCell>
+                                <TableCell>{field.allowNull ? "Yes" : "No"}</TableCell>
+                                <TableCell>{field.defaultValue || "-"}</TableCell>
+                                <TableCell>{field.primaryKey ? "Yes" : "No"}</TableCell>
+                                <TableCell>{field.comment || "-"}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardBody>
                     </Card>
                   </div>
                 ) : (
