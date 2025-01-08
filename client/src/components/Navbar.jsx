@@ -23,6 +23,7 @@ import Row from "./Row";
 import Text from "./Text";
 import { selectTeam, selectTeams } from "../slices/team";
 import { useTheme } from "../modules/ThemeContext";
+import LanguageSelector from "./LanguageSelector";
 
 /*
   The navbar component used throughout the app
@@ -270,6 +271,10 @@ function NavbarContainer() {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
+
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+          </div>
         </NavbarContent>
       </Navbar>
 

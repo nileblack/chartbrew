@@ -1,0 +1,13 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑"
+  },
+  "project": {
+    "settings": "项目设置",
+    "dashboard": "仪表盘",
+    "connections": "数据连接"
+  }
+} 
