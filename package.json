@@ -26,5 +26,11 @@
   "homepage": "https://github.com/chartbrew/chartbrew",
   "devDependencies": {
     "vuepress": "^1.9.7"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.22",
+    "@langchain/openai": "^0.3.16",
+    "@pinecone-database/pinecone": "^4.0.0",
+    "langchain": "^0.3.10"
   }
 }

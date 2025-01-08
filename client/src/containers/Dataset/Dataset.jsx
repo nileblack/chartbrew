@@ -351,7 +351,7 @@ function Dataset() {
             {!editLegend && (
               <>
                 <Text size="h4">{dataset?.legend}</Text>
-                <Link onClick={() => setEditLegend(true)}>
+                <Link onPress={() => setEditLegend(true)}>
                   <LuPencil />
                 </Link>
               </>
@@ -424,7 +424,7 @@ function Dataset() {
             {datasetMenu === "query" && (
               <Button
                 color="primary"
-                onClick={() => setDatasetMenu("configure")}
+                onPress={() => setDatasetMenu("configure")}
                 endContent={<LuArrowRight />}
                 isDisabled={dataset?.DataRequests.length === 0}
               >
@@ -434,7 +434,7 @@ function Dataset() {
             {datasetMenu === "configure" && (
               <Button
                 color="primary"
-                onClick={() => _onSaveDataset()}
+                onPress={() => _onSaveDataset()}
                 endContent={<LuCheck />}
                 isDisabled={dataset?.DataRequests.length === 0}
               >

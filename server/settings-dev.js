@@ -22,4 +22,11 @@ module.exports = {
   teamRestricted: process.env.CB_RESTRICT_TEAMS_DEV,
   signupRestricted: process.env.CB_RESTRICT_SIGNUP_DEV,
   chartbrewMainAPI: "https://api.chartbrew.com",
+  openai: {
+    apiKey: process.env.CB_OPENAI_API_KEY,
+    endpoint: process.env.CB_OPENAI_ENDPOINT || "https://api.openai.com/v1",
+    model: process.env.CB_OPENAI_MODEL || "gpt-4-turbo-preview",
+    temperature: process.env.CB_OPENAI_TEMPERATURE || 0.7,
+    maxTokens: process.env.CB_OPENAI_MAX_TOKENS || 2000,
+  },
 };

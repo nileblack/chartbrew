@@ -164,6 +164,7 @@ class DatasetController {
   }
 
   update(id, data) {
+    console.log("update", id, data);
     if (!id) {
       return db.Dataset.create(data)
         .then((dataset) => {

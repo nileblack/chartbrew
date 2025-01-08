@@ -32,6 +32,7 @@ import { useTheme } from "../../../modules/ThemeContext";
 import { createSavedQuery, updateSavedQuery } from "../../../slices/savedQuery";
 
 import VisualSQL from "./VisualSQL";
+import AiQuery from "./AiQuery";
 import { getConnection } from "../../../slices/connection";
 
 /*
@@ -244,7 +245,9 @@ function SqlBuilder(props) {
       </div>
     );
   }
-
+  console.log("activeTab", activeTab);
+  console.log("connection", connection);
+  console.log("schema", connection.schema);
   return (
     <div style={styles.container} className="pl-1 pr-1 sm:pl-4 sm:pr-4">
       <div className="grid grid-cols-12 gap-8">
@@ -257,7 +260,7 @@ function SqlBuilder(props) {
                   color="primary"
                   auto
                   size="sm"
-                  onClick={() => _onSavePressed()}
+                  onPress={() => _onSavePressed()}
                   isLoading={saveLoading || requestLoading}
                   variant="flat"
                 >
@@ -296,6 +299,15 @@ function SqlBuilder(props) {
               )}
               key="visual"
             />
+            <Tab
+            title={(
+              <div className="flex items-center gap-1">
+                <Text>AI</Text>
+                <Chip variant="flat" radius="sm" size="sm" color="secondary">New!!!</Chip>
+              </div>
+            )}
+            key="ai"
+            />
           </Tabs>
           <Spacer y={2} />
           <Divider />
@@ -332,6 +344,20 @@ function SqlBuilder(props) {
                     name="queryEditor"
                     editorProps={{ $blockScrolling: true }}
                     className="sqlbuilder-query-tut rounded-md border-1 border-solid border-content3"
+                  />
+                </div>
+              </Row>
+            </div>
+          )}
+          {activeTab === "ai" && (
+            <div>
+              <Row>
+                <div className="w-full">
+                  <AiQuery
+                    schema={connection.schema}
+                    query={sqlRequest.query}
+                    updateQuery={(query) => _onChangeQuery(query, true)}
+                    type={connection.type}
                   />
                 </div>
               </Row>
