@@ -19,7 +19,7 @@ function ConnectionExplorer() {
   const [loading, setLoading] = useState(true);
   const [selectedTable, setSelectedTable] = useState(null);
 
-  // 获取当前连接
+  // Get current connection
   const connection = connections?.find((c) => c.id === parseInt(params.connectionId, 10));
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function ConnectionExplorer() {
         .unwrap()
         .then(() => {
           setLoading(false);
-          // 设置默认选中第一个表
+          // Set default selected table
           if (connection?.schema?.tables?.length > 0) {
             setSelectedTable(connection.schema.tables[0]);
           }
@@ -57,9 +57,9 @@ function ConnectionExplorer() {
 
   return (
     <div className="flex h-full">
-      {/* 左侧表格列表 */}
+      {/* Left side - Table list */}
       <div className="w-64 h-full border-r border-gray-200 p-4 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">数据表</h2>
+        <h2 className="text-xl font-bold mb-4">Tables</h2>
         <div className="space-y-2">
           {connection.schema?.tables.map((tableName) => (
             <div
@@ -75,7 +75,7 @@ function ConnectionExplorer() {
         </div>
       </div>
 
-      {/* 右侧表格结构 */}
+      {/* Right side - Table structure */}
       <div className="flex-1 p-4 overflow-y-auto">
         {selectedTable ? (
           <div>
@@ -83,21 +83,21 @@ function ConnectionExplorer() {
             <Card className="p-4">
               <Table aria-label={`${selectedTable} structure`}>
                 <TableHeader>
-                  <TableColumn>字段名</TableColumn>
-                  <TableColumn>类型</TableColumn>
-                  <TableColumn>允许空值</TableColumn>
-                  <TableColumn>默认值</TableColumn>
-                  <TableColumn>主键</TableColumn>
-                  <TableColumn>备注</TableColumn>
+                  <TableColumn>Field</TableColumn>
+                  <TableColumn>Type</TableColumn>
+                  <TableColumn>Nullable</TableColumn>
+                  <TableColumn>Default</TableColumn>
+                  <TableColumn>Primary Key</TableColumn>
+                  <TableColumn>Comment</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {Object.entries(connection.schema.description[selectedTable]).map(([fieldName, field]) => (
                     <TableRow key={fieldName}>
                       <TableCell>{fieldName}</TableCell>
                       <TableCell>{field.type}</TableCell>
-                      <TableCell>{field.allowNull ? "是" : "否"}</TableCell>
+                      <TableCell>{field.allowNull ? "Yes" : "No"}</TableCell>
                       <TableCell>{field.defaultValue || "-"}</TableCell>
-                      <TableCell>{field.primaryKey ? "是" : "否"}</TableCell>
+                      <TableCell>{field.primaryKey ? "Yes" : "No"}</TableCell>
                       <TableCell>{field.comment || "-"}</TableCell>
                     </TableRow>
                   ))}
@@ -107,7 +107,7 @@ function ConnectionExplorer() {
           </div>
         ) : (
           <div className="h-full flex items-center justify-center text-gray-500">
-            请选择一个数据表
+            Please select a table
           </div>
         )}
       </div>
