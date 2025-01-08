@@ -21,6 +21,7 @@ const determineType = require("../modules/determineType");
 const drCacheController = require("./DataRequestCacheController");
 const RealtimeDatabase = require("../connections/RealtimeDatabase");
 const CustomerioConnection = require("../connections/CustomerioConnection");
+const openaiConnector = require("../modules/openaiConnector");
 
 const getMomentObj = (timezone) => {
   if (timezone) {
@@ -1087,6 +1088,71 @@ class ConnectionController {
       .catch((err) => {
         return err;
       });
+  }
+
+  async startSchemaAnalysis(connection) {
+    // Update status to running
+    await db.Connection.update(
+      { schemaAnalysisStatus: 'running' },
+      { where: { id: connection.id } }
+    );
+
+    try {
+      // Get database connection
+      const dbConnection = await externalDbConnection(connection);
+      
+      // Get tables
+      const tables = await dbConnection.getQueryInterface().showAllTables();
+      
+      // Get existing schema
+      const existingSchema = connection.schema || {};
+      
+      // Process each table
+      const tableDescriptions = {};
+      for (const table of tables) {
+        try {
+          const description = await dbConnection.getQueryInterface().describeTable(table);
+          
+          const fields = Object.entries(description).map(([fieldName, field]) => ({
+            name: fieldName,
+            type: field.type,
+            required: !field.allowNull,
+            isPrimary: field.primaryKey,
+            isAutoIncrement: field.autoIncrement,
+            defaultValue: field.defaultValue,
+            comment: field.comment,
+          }));
+
+          const aiDescription = await openaiConnector.generateTableDescription(table, fields);
+          tableDescriptions[table] = aiDescription;
+        } catch (error) {
+          console.error(`Error analyzing table ${table}:`, error);
+          tableDescriptions[table] = "";
+        }
+      }
+
+      // Update schema with new descriptions
+      const updatedSchema = {
+        ...existingSchema,
+        tableDescriptions
+      };
+
+      // Save results
+      await db.Connection.update(
+        { 
+          schema: updatedSchema,
+          schemaAnalysisStatus: 'completed'
+        },
+        { where: { id: connection.id } }
+      );
+
+    } catch (error) {
+      console.error("Schema analysis failed:", error);
+      await db.Connection.update(
+        { schemaAnalysisStatus: 'failed' },
+        { where: { id: connection.id } }
+      );
+    }
   }
 }
 

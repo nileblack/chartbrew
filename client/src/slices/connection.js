@@ -179,6 +179,34 @@ export const runHelperMethod = createAsyncThunk(
   }
 );
 
+export const analyzeSchema = createAsyncThunk(
+  "connection/analyzeSchema",
+  async ({ team_id, connection_id }) => {
+    const token = getAuthToken();
+    const url = `${API_HOST}/teams/${team_id}/connections/${connection_id}/analyze-schema`;
+    const headers = new Headers({
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    });
+    const response = await fetch(url, { headers, method: "POST" });
+    return response.data;
+  }
+);
+
+export const getSchemaAnalysisStatus = createAsyncThunk(
+  "connection/getSchemaAnalysisStatus",
+  async ({ team_id, connection_id }) => {
+    const token = getAuthToken();
+    const url = `${API_HOST}/teams/${team_id}/connections/${connection_id}/analyze-schema/status`;
+    const headers = new Headers({
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    });
+    const response = await fetch(url, { headers, method: "GET" });
+    return response.data;
+  }
+);
+
 export const connectionSlice = createSlice({
   name: "dataset",
   initialState,
@@ -301,7 +329,33 @@ export const connectionSlice = createSlice({
     builder.addCase(runHelperMethod.rejected, (state) => {
       state.loading = false;
       state.error = true;
-    });
+    })
+
+    // analyzeSchema
+    builder
+      .addCase(analyzeSchema.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(analyzeSchema.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(analyzeSchema.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+
+    // getSchemaAnalysisStatus
+    builder
+      .addCase(getSchemaAnalysisStatus.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getSchemaAnalysisStatus.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(getSchemaAnalysisStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 

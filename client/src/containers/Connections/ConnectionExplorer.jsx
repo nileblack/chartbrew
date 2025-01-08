@@ -11,10 +11,10 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/react";
-import { selectConnections, getConnection, saveConnection } from "../../slices/connection";
+import { selectConnections, getConnection, saveConnection, analyzeSchema, getSchemaAnalysisStatus } from "../../slices/connection";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
-import { LuCircleArrowLeft, LuSearch, LuBrain } from "react-icons/lu";
+import { LuCircleArrowLeft, LuSearch, LuBrain, LuDatabase } from "react-icons/lu";
 import { Spacer } from "@nextui-org/react";
 import { CardHeader, CardBody } from "@nextui-org/react";
 import { generateTableDescription } from "../../actions/ai";
@@ -30,6 +30,7 @@ function ConnectionExplorer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [tableDescription, setTableDescription] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Get current connection
   const connection = connections?.find((c) => c.id === parseInt(params.connectionId, 10));
@@ -78,7 +79,6 @@ function ConnectionExplorer() {
       .then((data) => {
         const {description, fields } = data.description;
         setTableDescription(marked.parse(description));
-        console.log("updatedSchema", fields);
 
         // 更新 connection 中的字段注释
         if (fields) {
@@ -124,11 +124,47 @@ function ConnectionExplorer() {
       });
   };
 
+  const startSchemaAnalysis = async () => {
+    try {
+      setIsAnalyzing(true);
+      await dispatch(analyzeSchema({ 
+        team_id: params.teamId,
+        connection_id: params.connectionId 
+      })).unwrap();
+      
+      toast.success("Schema analysis started");
+      
+      // Poll for status
+      const interval = setInterval(async () => {
+        const { status } = await dispatch(getSchemaAnalysisStatus({ 
+          team_id: params.teamId,
+          connection_id: params.connectionId 
+        })).unwrap();
+        
+        if (status === 'completed') {
+          clearInterval(interval);
+          setIsAnalyzing(false);
+          // Refresh connection data
+          dispatch(getConnection({ 
+            team_id: params.teamId,
+            connection_id: params.connectionId 
+          }));
+          toast.success("Schema analysis completed");
+        } else if (status === 'failed') {
+          clearInterval(interval);
+          setIsAnalyzing(false);
+          toast.error("Schema analysis failed");
+        }
+      }, 5000);
+    } catch (error) {
+      setIsAnalyzing(false);
+      toast.error(error?.message || "Could not start analysis");
+    }
+  };
+
   if (!params.teamId || !params.connectionId) {
     return <div>Missing required parameters</div>;
   }
-  console.log("connection", connection);
-  console.log("currentTable", connection?.schema?.description[selectedTable]);
   return (
     <div>
       <Navbar hideTeam transparent />
@@ -186,15 +222,27 @@ function ConnectionExplorer() {
                   <div>
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-2xl font-semibold">{selectedTable}</h2>
-                      <Button
-                        color="primary"
-                        variant="flat"
-                        startContent={<LuBrain />}
-                        isLoading={isGenerating}
-                        onPress={generateAIDescription}
-                      >
-                        Generate AI Description
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          color="primary"
+                          variant="flat"
+                          startContent={<LuBrain />}
+                          isLoading={isGenerating}
+                          onPress={generateAIDescription}
+                        >
+                          Generate AI Description
+                        </Button>
+                        <Button
+                          color="secondary"
+                          variant="flat"
+                          startContent={<LuDatabase />}
+                          isLoading={isAnalyzing}
+                          onPress={startSchemaAnalysis}
+                          isDisabled={connection?.schemaAnalysisStatus === 'running'}
+                        >
+                          {isAnalyzing ? "Analyzing..." : "Analyze Database Structure"}
+                        </Button>
+                      </div>
                     </div>
                     
                     {tableDescription && (

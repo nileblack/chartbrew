@@ -283,6 +283,10 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
     },
+    schemaAnalysisStatus: {
+      type: DataTypes.ENUM('idle', 'running', 'completed', 'failed'),
+      defaultValue: 'idle'
+    },
   }, {
     freezeTableName: true,
   });

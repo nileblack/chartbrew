@@ -460,6 +460,47 @@ module.exports = (app) => {
     }
   });
 
+  // Route to trigger schema analysis
+  app.post("/teams/:teamId/connections/:connectionId/analyze-schema", verifyToken, async (req, res) => {
+    try {
+      const { teamId, connectionId } = req.params;
+      
+      // Get connection
+      const connection = await connectionController.findById(connectionId);
+      
+      if (!connection) {
+        return res.status(404).json({ error: "Connection not found" });
+      }
+
+      // Check if analysis is already running
+      if (connection.schemaAnalysisStatus === 'running') {
+        return res.status(400).json({ error: "Analysis is already in progress" });
+      }
+
+      // Start analysis in background
+      connectionController.startSchemaAnalysis(connection);
+
+      return res.status(200).json({ message: "Schema analysis started" });
+    } catch (error) {
+      console.error("Error starting schema analysis:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Route to get analysis status
+  app.get("/teams/:teamId/connections/:connectionId/analyze-schema/status", verifyToken, async (req, res) => {
+    try {
+      const { connectionId } = req.params;
+      const connection = await connectionController.findById(connectionId);
+      
+      return res.status(200).json({ 
+        status: connection.schemaAnalysisStatus 
+      });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  });
+
   return (req, res, next) => {
     next();
   };
