@@ -191,12 +191,60 @@ IMPORTANT:
 
   async generateTableDescription(tableName, fields) {
     try {
-      // 构建表结构描述
-      const fieldDescriptions = fields.map(f => 
-        `${f.name} (${f.type})${f.isPrimary ? ' PRIMARY KEY' : ''}${f.required ? ' NOT NULL' : ''}${f.defaultValue ? ` DEFAULT ${f.defaultValue}` : ''}${f.comment ? ` - ${f.comment}` : ''}`
-      ).join('\n');
+        // First, generate comments for all fields with complete context
+        const commentGenerationPrompt = `For the table "${tableName}", please analyze all fields and generate appropriate field descriptions.
+Please consider the relationships and context between all fields when generating descriptions.
+Return a JSON object where keys are field names and values are their descriptions in Chinese.
 
-      const prompt = `Based on the following database table structure:
+Complete table structure:
+${fields.map(f => 
+    `${f.name} (${f.type})${f.isPrimary ? ' PRIMARY KEY' : ''}${f.required ? ' NOT NULL' : ''}${f.defaultValue ? ` DEFAULT ${f.defaultValue}` : ''}${f.comment ? ` - Current comment: ${f.comment}` : ''}`
+).join('\n')}
+
+Example response format:
+{
+    "field_name": "这是字段描述",
+    "another_field": "另一个字段的描述"
+}
+
+IMPORTANT:
+- Provide descriptions for ALL fields
+- Consider the relationships between fields
+- If a field already has a comment, you can improve it if necessary
+- Descriptions should be clear and professional in Chinese`;
+
+        const commentResponse = await this.openai.chat.completions.create({
+            ...this.defaultConfig,
+            messages: [
+                { 
+                    role: "user", 
+                    content: commentGenerationPrompt
+                }
+            ],
+        });
+
+        let fieldsWithComments;
+        try {
+            const content = commentResponse.choices[0].message.content.trim()
+                .replace(/```json\n?/, '').replace(/```/, '');
+            const generatedComments = JSON.parse(content);
+            
+            // Update all fields with generated comments
+            fieldsWithComments = fields.map(field => ({
+                ...field,
+                comment: generatedComments[field.name] || field.comment || ''
+            }));
+        } catch (error) {
+            console.error("[Comment Generation Parse Error]", error);
+            fieldsWithComments = fields; // Fallback to original fields if parsing fails
+        }
+        console.log("fieldsWithComments", fieldsWithComments);
+        // Continue with the original table description logic using fieldsWithComments
+        const fieldDescriptions = fieldsWithComments.map(f => 
+            `${f.name} (${f.type})${f.isPrimary ? ' PRIMARY KEY' : ''}${f.required ? ' NOT NULL' : ''}${f.defaultValue ? ` DEFAULT ${f.defaultValue}` : ''} - ${f.comment || ''}`
+        ).join('\n');
+
+        const prompt = `Based on the following database table structure:
 
 Table: ${tableName}
 Fields:
@@ -215,28 +263,30 @@ IMPORTANT:
 - Please provide the response in Chinese (Simplified).
 - Please format the response in markdown.`;
 
-      const response = await this.openai.chat.completions.create({
-        ...this.defaultConfig,
-        messages: [
-          { 
-            role: "user", 
-            content: prompt
-          }
-        ],
-      });
+        const response = await this.openai.chat.completions.create({
+            ...this.defaultConfig,
+            messages: [
+                { 
+                    role: "user", 
+                    content: prompt
+                }
+            ],
+        });
 
-      return {
-        success: true,
-        description: response.choices[0].message.content.trim()
-      };
+        return {
+            success: true,
+            description: response.choices[0].message.content.trim(),
+            fields: fieldsWithComments
+        };
 
     } catch (error) {
-      console.error("[OpenAI Error]", error);
-      return {
-        success: false,
-        error: error.message || "An unexpected error occurred",
-        description: null
-      };
+        console.error("[OpenAI Error]", error);
+        return {
+            success: false,
+            error: error.message || "An unexpected error occurred",
+            description: null,
+            fields: null
+        };
     }
   }
 }

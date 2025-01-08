@@ -11,7 +11,7 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/react";
-import { selectConnections, getConnection } from "../../slices/connection";
+import { selectConnections, getConnection, saveConnection } from "../../slices/connection";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 import { LuCircleArrowLeft, LuSearch, LuBrain } from "react-icons/lu";
@@ -34,6 +34,17 @@ function ConnectionExplorer() {
   // Get current connection
   const connection = connections?.find((c) => c.id === parseInt(params.connectionId, 10));
 
+  // 处理表格选择
+  const handleTableSelect = (tableName) => {
+    setSelectedTable(tableName);
+    // 如果该表有描述，则更新描述
+    if (connection?.schema?.tableDescriptions?.[tableName]) {
+      setTableDescription(marked.parse(connection.schema.tableDescriptions[tableName]));
+    } else {
+      setTableDescription('');
+    }
+  };
+
   useEffect(() => {
     if (params.teamId && params.connectionId) {
       dispatch(getConnection({ 
@@ -43,9 +54,9 @@ function ConnectionExplorer() {
         .unwrap()
         .then(() => {
           setLoading(false);
-          // Set default selected table
+          // 设置默认选中的表格
           if (connection?.schema?.tables?.length > 0) {
-            setSelectedTable(connection.schema.tables[0]);
+            handleTableSelect(connection.schema.tables[0]);
           }
         })
         .catch((err) => {
@@ -65,8 +76,43 @@ function ConnectionExplorer() {
     setIsGenerating(true);
     generateTableDescription(params.teamId, params.connectionId, selectedTable)
       .then((data) => {
-        const description = data.description?.description || data.description;
+        const {description, fields } = data.description;
         setTableDescription(marked.parse(description));
+        console.log("updatedSchema", fields);
+
+        // 更新 connection 中的字段注释
+        if (fields) {
+          const updatedSchema = {
+            ...connection.schema,
+            // 添加或更新表描述
+            tableDescriptions: {
+              ...connection.schema.tableDescriptions,
+              [selectedTable]: description
+            },
+            description: {
+              ...connection.schema.description,
+              [selectedTable]: Object.fromEntries(
+                fields.map(field => [
+                  field.name,
+                  {
+                    ...connection.schema.description[selectedTable][field.name],
+                    comment: field.comment
+                  }
+                ])
+              )
+            }
+          };
+
+          // 使用已有的 saveConnection action
+          dispatch(saveConnection({ 
+            team_id: params.teamId, 
+            connection: {
+              ...connection,
+              schema: updatedSchema
+            }
+          }));
+        }
+
         toast.success("Description generated successfully!");
       })
       .catch((error) => {
@@ -81,7 +127,8 @@ function ConnectionExplorer() {
   if (!params.teamId || !params.connectionId) {
     return <div>Missing required parameters</div>;
   }
-
+  console.log("connection", connection);
+  console.log("currentTable", connection?.schema?.description[selectedTable]);
   return (
     <div>
       <Navbar hideTeam transparent />
@@ -125,7 +172,7 @@ function ConnectionExplorer() {
                       className={`p-2 rounded cursor-pointer hover:bg-content2 ${
                         selectedTable === tableName ? 'bg-primary text-white' : ''
                       }`}
-                      onClick={() => setSelectedTable(tableName)}
+                      onClick={() => handleTableSelect(tableName)}
                     >
                       {tableName}
                     </div>
@@ -144,7 +191,7 @@ function ConnectionExplorer() {
                         variant="flat"
                         startContent={<LuBrain />}
                         isLoading={isGenerating}
-                        onClick={generateAIDescription}
+                        onPress={generateAIDescription}
                       >
                         Generate AI Description
                       </Button>

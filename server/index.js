@@ -47,8 +47,8 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 app.use(cookieParser());
-app.use(urlencoded({ extended: true }));
-app.use(json());
+app.use(urlencoded({ extended: true, limit: '50mb' }));
+app.use(json({ limit: '50mb' }));
 app.use(methodOverride("X-HTTP-Method-Override"));
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
