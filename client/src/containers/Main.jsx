@@ -32,6 +32,7 @@ import { Toaster } from "react-hot-toast";
 import ConnectionList from "./UserDashboard/ConnectionList";
 import DatasetList from "./UserDashboard/DatasetList";
 import DashboardList from "./UserDashboard/DashboardList";
+import ConnectionExplorer from "./Connections/ConnectionExplorer";
 
 const ProjectBoard = lazy(() => import("./ProjectBoard/ProjectBoard"));
 const Signup = lazy(() => import("./Signup"));
@@ -275,6 +276,11 @@ function Main(props) {
                 exact
                 path="/:teamId/connection/:connectionId"
                 element={<ConnectionWizard />}
+              />
+              <Route
+                exact
+                path="/:teamId/connection/:connectionId/explorer"
+                element={<ConnectionExplorer />}
               />
             </Routes>
           </Suspense>

@@ -110,6 +110,9 @@ const router = createBrowserRouter([
       {
         path: ":teamId/connection/:connectionId",
       },
+      {
+        path: ":teamId/connection/:connectionId/explorer",
+      },
     ],
   },
 ]);

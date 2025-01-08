@@ -143,7 +143,7 @@ function ConnectionList() {
                     size="sm"
                     isBordered
                   />
-                  <Link to={`/${team.id}/connection/${connection.id}`} className="cursor-pointer">
+                  <Link to={`/${team.id}/connection/${connection.id}/explorer`} className="cursor-pointer">
                     <span className="text-foreground font-medium">{connection.name}</span>
                   </Link>
                 </div>
