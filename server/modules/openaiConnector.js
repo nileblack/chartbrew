@@ -35,13 +35,10 @@ class OpenAIConnector {
 
   async generateSqlQuery(description, schema) {
     try {
-      // 确保向量存储已初始化
       await this.ensureInitialized(schema);
-
-      // 检索相关的 schema 信息
-      const relevantDocs = await vectorStore.searchRelevant(description);
       
-      // 构建上下文
+      // 使用 vectorStore 的 searchRelevant 方法
+      const relevantDocs = await vectorStore.searchRelevant(description);
       const context = relevantDocs.map(doc => doc.pageContent).join('\n\n');
       
       // 构建提示
@@ -135,28 +132,13 @@ IMPORTANT: Your response must be a valid JSON array containing 2-3 SQL query obj
       };
 
     } catch (error) {
-      console.error("[OpenAI Error]", error.response || error);
+      console.error("[OpenAI Error]", error);
       return {
         success: false,
-        error: error.message,
+        error: error.message || "An unexpected error occurred",
         data: null
       };
     }
-  }
-
-  async explainQuery(query, schema) {
-    await this.ensureInitialized(schema);
-    const relevantDocs = await vectorStore.searchRelevant(query);
-    const context = relevantDocs.map(doc => doc.pageContent).join('\n\n');
-    
-    const prompt = `Using this schema information:
-
-${context}
-
-Explain this SQL query in plain English:
-${query}`;
-
-    return this.generateCompletion(prompt);
   }
 }
 

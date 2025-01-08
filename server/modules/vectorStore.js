@@ -1,6 +1,8 @@
 const { OpenAIEmbeddings } = require('@langchain/openai');
 const { MemoryVectorStore } = require('langchain/vectorstores/memory');
 const settings = process.env.NODE_ENV === "production" ? require("../settings") : require("../settings-dev");
+const fs = require('fs').promises;
+const path = require('path');
 
 class SchemaVectorStore {
   constructor() {
@@ -14,6 +16,44 @@ class SchemaVectorStore {
       }
     });
     this.vectorStore = null;
+    this.vectorStorePath = path.join(__dirname, '../data/vector-store.json');
+  }
+
+  async loadFromDisk() {
+    try {
+      const data = await fs.readFile(this.vectorStorePath, 'utf-8');
+      const savedData = JSON.parse(data);
+      this.vectorStore = await MemoryVectorStore.fromExistingIndex(
+        this.embeddings,
+        savedData
+      );
+      console.log('Vector store loaded from disk');
+      return true;
+    } catch (error) {
+      console.log('No existing vector store found or failed to load:', error.message);
+      return false;
+    }
+  }
+
+  async saveToDisk() {
+    if (!this.vectorStore) {
+      return;
+    }
+
+    try {
+      // 确保目录存在
+      await fs.mkdir(path.dirname(this.vectorStorePath), { recursive: true });
+      
+      // 保存向量存储数据
+      const data = this.vectorStore.memoryVectors;
+      await fs.writeFile(
+        this.vectorStorePath,
+        JSON.stringify(data, null, 2)
+      );
+      console.log('Vector store saved to disk');
+    } catch (error) {
+      console.error('Failed to save vector store:', error);
+    }
   }
 
   prepareDocuments(schema) {
@@ -87,12 +127,22 @@ ${fields.map(f => `${f.name}: ${f.type} - Used for storing ${f.name.toLowerCase(
   }
 
   async initialize(schema) {
+    // 首先尝试从磁盘加载
+    const loaded = await this.loadFromDisk();
+    if (loaded) {
+      return;
+    }
+
+    // 如果加载失败，重新创建向量存储
     const documents = this.prepareDocuments(schema);
     this.vectorStore = await MemoryVectorStore.fromDocuments(
       documents,
       this.embeddings
     );
     console.log(`Initialized vector store with ${documents.length} documents`);
+
+    // 保存到磁盘
+    await this.saveToDisk();
   }
 
   async searchRelevant(query, k = 5) {

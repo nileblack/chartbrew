@@ -10,6 +10,7 @@ import { generateQuery } from "../../../actions/ai";
 function AiQuery({ schema, query, updateQuery, type }) {
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
+  const [queryOptions, setQueryOptions] = useState([]);
   console.log("query", query, schema, type);
   const _onGenerateQuery = () => {
     if (!description) {
@@ -25,12 +26,12 @@ function AiQuery({ schema, query, updateQuery, type }) {
     setLoading(true);
     generateQuery(description, schema)
       .then((response) => {
-        updateQuery(response.query);
-        toast.success("Query generated successfully!");
+        setQueryOptions(response.query.data.queries);
+        toast.success("Queries generated successfully!");
       })
       .catch((error) => {
-        toast.error(error?.message || "Could not generate query");
-        console.error("Error generating query:", error);
+        toast.error(error?.message || "Could not generate queries");
+        console.error("Error generating queries:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -64,6 +65,26 @@ function AiQuery({ schema, query, updateQuery, type }) {
       >
         Generate Query
       </Button>
+      
+      {queryOptions.length > 0 && (
+        <div className="flex flex-col gap-2 mt-4">
+          <Text>Generated Queries:</Text>
+          {queryOptions.map((option, index) => (
+            <div key={index} className="flex flex-col gap-2 p-4 border rounded-lg">
+              <Text small>{option.description}</Text>
+              <Text small className="text-gray-500">{option.sql}</Text>
+              <Text small className="text-gray-500">Confidence: {(option.confidence * 100).toFixed(1)}%</Text>
+              <Button 
+                size="sm" 
+                onPress={() => updateQuery(option.sql)}
+                color="secondary"
+              >
+                Use This Query
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
