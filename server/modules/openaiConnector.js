@@ -51,6 +51,7 @@ ${context}
 
 Generate a SQL query for this request: ${description}
 
+
 Please ensure the query:
 1. Uses only the tables and fields mentioned in the schema
 2. Includes proper JOIN conditions if multiple tables are needed
@@ -59,13 +60,14 @@ Please ensure the query:
 [
   {
     "description": "A clear explanation of what this query does",
-    "sql": "The SQL query statement"
+    "sql": "The SQL query statement",
+    "tables": ["list", "of", "tables", "used"],
+    "confidence": 0.95  // A number between 0 and 1 indicating how well this query matches the request
   },
   ...
 ]
-
-Please provide 2-3 valid SQL queries that best match the request, ordered from most relevant to least relevant.
-
+Please return a JSON array with 2-3 valid SQL queries that best match the request, ordered from most relevant to least relevant.
+IMPORTANT: Your response must be a valid JSON array containing 2-3 SQL query objects.
 `;
 
       console.log("[OpenAI Request]", {
@@ -89,13 +91,26 @@ Please provide 2-3 valid SQL queries that best match the request, ordered from m
         choices: response.choices
       });
 
-      const content = response.choices[0].message.content;
+      let content = response.choices[0].message.content.trim();
+      
+      // 移除 Markdown 代码块标记
+      content = content.replace(/^```json\n/, '')  // 移除开头的 ```json
+                      .replace(/^```\n/, '')       // 或者移除开头的 ```
+                      .replace(/\n```$/, '')       // 移除结尾的 ```
+                      .trim();
+
       let queries;
       try {
         queries = JSON.parse(content);
       } catch (error) {
-        console.error("[Parse Error] Failed to parse OpenAI response as JSON:", content);
-        throw new Error("Failed to parse OpenAI response as valid JSON");
+        console.error("[Parse Error] Content:", content);
+        console.error("[Parse Error] Error:", error);
+        
+        return {
+          success: false,
+          error: "Failed to parse SQL queries response",
+          data: null
+        };
       }
 
       if (!Array.isArray(queries)) {
@@ -103,15 +118,29 @@ Please provide 2-3 valid SQL queries that best match the request, ordered from m
       }
 
       queries.forEach((query, index) => {
-        if (!query.description || !query.sql) {
+        if (!query.description || !query.sql || !Array.isArray(query.tables) || typeof query.confidence !== 'number') {
           throw new Error(`Query at index ${index} is missing required fields`);
         }
       });
 
-      return queries;
+      return {
+        success: true,
+        data: {
+          queries: queries,
+          context: {
+            relevantTables: [...new Set(queries.flatMap(q => q.tables))],
+            totalQueries: queries.length
+          }
+        }
+      };
+
     } catch (error) {
       console.error("[OpenAI Error]", error.response || error);
-      throw new Error(`OpenAI API Error: ${error.message}`);
+      return {
+        success: false,
+        error: error.message,
+        data: null
+      };
     }
   }
 
