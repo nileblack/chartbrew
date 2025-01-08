@@ -188,6 +188,57 @@ IMPORTANT:
       };
     }
   }
+
+  async generateTableDescription(tableName, fields) {
+    try {
+      // 构建表结构描述
+      const fieldDescriptions = fields.map(f => 
+        `${f.name} (${f.type})${f.isPrimary ? ' PRIMARY KEY' : ''}${f.required ? ' NOT NULL' : ''}${f.defaultValue ? ` DEFAULT ${f.defaultValue}` : ''}${f.comment ? ` - ${f.comment}` : ''}`
+      ).join('\n');
+
+      const prompt = `Based on the following database table structure:
+
+Table: ${tableName}
+Fields:
+${fieldDescriptions}
+
+Please provide a comprehensive description of this table that includes:
+1. The main purpose of the table
+2. Key fields and their significance
+3. Relationships with other tables (based on primary/foreign keys)
+4. Any business rules or constraints evident from the structure
+5. Common use cases for this table
+
+Format the response in clear, professional language suitable for technical documentation.
+
+IMPORTANT:
+- Please provide the response in Chinese (Simplified).
+- Please format the response in markdown.`;
+
+      const response = await this.openai.chat.completions.create({
+        ...this.defaultConfig,
+        messages: [
+          { 
+            role: "user", 
+            content: prompt
+          }
+        ],
+      });
+
+      return {
+        success: true,
+        description: response.choices[0].message.content.trim()
+      };
+
+    } catch (error) {
+      console.error("[OpenAI Error]", error);
+      return {
+        success: false,
+        error: error.message || "An unexpected error occurred",
+        description: null
+      };
+    }
+  }
 }
 
 module.exports = new OpenAIConnector(); 

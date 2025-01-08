@@ -1,0 +1,97 @@
+.markdown-content {
+  /* 标题样式 */
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+    font-weight: 600;
+  }
+
+  h1 { font-size: 1.75em; }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.25em; }
+
+  /* 段落样式 */
+  p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+  }
+
+  /* 列表样式 */
+  ul, ol {
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+  }
+
+  li {
+    margin-bottom: 0.5em;
+  }
+
+  /* 代码块样式 */
+  pre {
+    background-color: #f4f4f4;
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+
+  /* 表格样式 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 0.5em;
+  }
+
+  th {
+    background-color: #f4f4f4;
+  }
+
+  /* 引用样式 */
+  blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin-left: 0;
+    margin-bottom: 1em;
+    color: #666;
+  }
+
+  /* 链接样式 */
+  a {
+    color: #0066cc;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* 暗色主题适配 */
+.dark .markdown-content {
+  pre, code {
+    background-color: #2d2d2d;
+  }
+
+  th {
+    background-color: #2d2d2d;
+  }
+
+  blockquote {
+    border-left-color: #444;
+    color: #999;
+  }
+
+  a {
+    color: #66b3ff;
+  }
+} 

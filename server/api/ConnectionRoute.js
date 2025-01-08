@@ -6,6 +6,7 @@ const TeamController = require("../controllers/TeamController");
 const ProjectController = require("../controllers/ProjectController");
 const verifyToken = require("../modules/verifyToken");
 const accessControl = require("../modules/accessControl");
+const openaiConnector = require("../modules/openaiConnector");
 
 const upload = multer({
   dest: ".connectionFiles/",
@@ -412,6 +413,52 @@ module.exports = (app) => {
       });
   });
   // -------------------------------------------------
+
+  /*
+  ** Route to generate table description using AI
+  */
+  app.post("/teams/:teamId/connections/:connectionId/tables/:tableName/describe", verifyToken, async (req, res) => {
+    try {
+      const { teamId, connectionId, tableName } = req.params;
+      
+      // 使用 connectionController 获取连接信息
+      const connection = await connectionController.findById(connectionId);
+      
+      if (!connection) {
+        return res.status(404).json({ error: "Connection not found" });
+      }
+
+      // 验证团队权限
+      if (connection.team_id !== parseInt(teamId, 10)) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+
+      // 获取表结构信息
+      const tableInfo = connection.schema.description[tableName];
+      if (!tableInfo) {
+        return res.status(404).json({ error: "Table not found" });
+      }
+
+      // 构建表结构描述
+      const fields = Object.entries(tableInfo).map(([fieldName, field]) => ({
+        name: fieldName,
+        type: field.type,
+        required: !field.allowNull,
+        isPrimary: field.primaryKey,
+        isAutoIncrement: field.autoIncrement,
+        defaultValue: field.defaultValue,
+        comment: field.comment,
+      }));
+
+      // 生成 AI 描述
+      const description = await openaiConnector.generateTableDescription(tableName, fields);
+      
+      return res.status(200).json({ description });
+    } catch (error) {
+      console.error("Error generating table description:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  });
 
   return (req, res, next) => {
     next();

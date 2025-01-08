@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Spinner, Card, Input } from "@nextui-org/react";
+import { Spinner, Card, Input, Button } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import {
   Table,
   TableHeader,
@@ -13,9 +14,12 @@ import {
 import { selectConnections, getConnection } from "../../slices/connection";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
-import { LuCircleArrowLeft, LuSearch } from "react-icons/lu";
+import { LuCircleArrowLeft, LuSearch, LuBrain } from "react-icons/lu";
 import { Spacer } from "@nextui-org/react";
 import { CardHeader, CardBody } from "@nextui-org/react";
+import { generateTableDescription } from "../../actions/ai";
+import { toast } from "react-hot-toast";
+import { marked } from 'marked';
 
 function ConnectionExplorer() {
   const params = useParams();
@@ -24,6 +28,8 @@ function ConnectionExplorer() {
   const [loading, setLoading] = useState(true);
   const [selectedTable, setSelectedTable] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [tableDescription, setTableDescription] = useState("");
 
   // Get current connection
   const connection = connections?.find((c) => c.id === parseInt(params.connectionId, 10));
@@ -52,6 +58,25 @@ function ConnectionExplorer() {
   const filteredTables = connection?.schema?.tables.filter(tableName =>
     tableName.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
+
+  const generateAIDescription = async () => {
+    if (!selectedTable) return;
+    
+    setIsGenerating(true);
+    generateTableDescription(params.teamId, params.connectionId, selectedTable)
+      .then((data) => {
+        const description = data.description?.description || data.description;
+        setTableDescription(marked.parse(description));
+        toast.success("Description generated successfully!");
+      })
+      .catch((error) => {
+        toast.error(error?.message || "Could not generate description");
+        console.error("Error generating description:", error);
+      })
+      .finally(() => {
+        setIsGenerating(false);
+      });
+  };
 
   if (!params.teamId || !params.connectionId) {
     return <div>Missing required parameters</div>;
@@ -112,7 +137,34 @@ function ConnectionExplorer() {
               <div className="flex-1 p-4 overflow-y-auto">
                 {selectedTable ? (
                   <div>
-                    <h2 className="text-2xl font-semibold mb-4">{selectedTable}</h2>
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-semibold">{selectedTable}</h2>
+                      <Button
+                        color="primary"
+                        variant="flat"
+                        startContent={<LuBrain />}
+                        isLoading={isGenerating}
+                        onClick={generateAIDescription}
+                      >
+                        Generate AI Description
+                      </Button>
+                    </div>
+                    
+                    {tableDescription && (
+                      <Accordion className="mb-4" defaultExpandedKeys={["description"]}>
+                        <AccordionItem 
+                          key="description"
+                          title="Table Description" 
+                          className="bg-content2"
+                        >
+                          <div 
+                            className="prose prose-sm dark:prose-invert max-w-none markdown-content"
+                            dangerouslySetInnerHTML={{ __html: tableDescription }} 
+                          />
+                        </AccordionItem>
+                      </Accordion>
+                    )}
+
                     <Card>
                       <Table aria-label={`${selectedTable} structure`}>
                         <TableHeader>
