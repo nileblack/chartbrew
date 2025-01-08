@@ -12,6 +12,7 @@ import {
   LuMoon, LuSettings, LuSmile, LuSun, LuUser, LuWallpaper,
 } from "react-icons/lu";
 import { TbBrandDiscord } from "react-icons/tb";
+import { useTranslation } from "react-i18next";
 
 import { logout, selectUser } from "../slices/user";
 import FeedbackForm from "./FeedbackForm";
@@ -29,6 +30,8 @@ import LanguageSelector from "./LanguageSelector";
   The navbar component used throughout the app
 */
 function NavbarContainer() {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`navbar.${key}`);
   const [changelogPadding, setChangelogPadding] = useState(true);
   const [feedbackModal, setFeedbackModal] = useState();
   const [teamOwned, setTeamOwned] = useState({});
@@ -149,7 +152,7 @@ function NavbarContainer() {
             <Breadcrumbs variant="solid">
               {!params.teamId && (
                 <BreadcrumbItem key="home" onClick={() => navigate("/")}>
-                  <Text>{"Home"}</Text>
+                  <Text>{t("Home")}</Text>
                 </BreadcrumbItem>
               )}
               {params.teamId && (
@@ -173,15 +176,15 @@ function NavbarContainer() {
           <NavbarItem>
             <LinkNext
               className="changelog-trigger flex flex-row items-center text-foreground"
-              title="Changelog"
+              title={t("Changelog")}
             >
               <span className="changelog-badge">
                 {changelogPadding && <span style={{ paddingLeft: 16, paddingRight: 16 }} />}
               </span>
-              <div className={"hidden sm:block text-sm"}>Updates</div>
+              <div className={"hidden sm:block text-sm"}>{t("Updates")}</div>
             </LinkNext>
           </NavbarItem>
-          <Dropdown aria-label="Select a help option">
+          <Dropdown aria-label={t("Select a help option")}>
             <NavbarItem>
               <DropdownTrigger>
                 <Button
@@ -191,36 +194,36 @@ function NavbarContainer() {
                   startContent={<LuHeartHandshake size={18} />}
                   radius="sm"
                 >
-                  Resources
+                  {t("Resources")}
                 </Button>
               </DropdownTrigger>
             </NavbarItem>
             <DropdownMenu variant="faded" onAction={(key) => _onDropdownAction(key)}>
-              <DropdownItem startContent={<TbBrandDiscord />} key="discord" textValue="Join our Discord">
-                <Text>{"Join our Discord"}</Text>
+              <DropdownItem startContent={<TbBrandDiscord />} key="discord" textValue={t("Join our Discord")}>
+                <Text>{t("Join our Discord")}</Text>
               </DropdownItem>
-              <DropdownItem startContent={<LuSquareKanban />} key="roadmap" textValue="Roadmap" endContent={<Chip variant="flat" color="secondary" size="sm" radius="sm">New</Chip>}>
-                <Text>{"Roadmap"}</Text>
+              <DropdownItem startContent={<LuSquareKanban />} key="roadmap" textValue={t("Roadmap")}>
+                <Text>{t("Roadmap")}</Text>
               </DropdownItem>
-              <DropdownItem startContent={<LuBook />} key="tutorials" textValue="Blog tutorials">
-                <Text>{"Blog tutorials"}</Text>
+              <DropdownItem startContent={<LuBook />} key="tutorials" textValue={t("Blog tutorials")}>
+                <Text>{t("Blog tutorials")}</Text>
               </DropdownItem>
-              <DropdownItem startContent={<LuBookOpenText />} key="documentation" textValue="Documentation">
-                <Text>{"Documentation"}</Text>
+              <DropdownItem startContent={<LuBookOpenText />} key="documentation" textValue={t("Documentation")}>
+                <Text>{t("Documentation")}</Text>
               </DropdownItem>
-              <DropdownItem startContent={<LuFileCode2 />} key="api" textValue="API Reference">
-                <Text>{"API Reference"}</Text>
+              <DropdownItem startContent={<LuFileCode2 />} key="api" textValue={t("API Reference")}>
+                <Text>{t("API Reference")}</Text>
               </DropdownItem>
-              <DropdownItem startContent={<LuGithub />} key="github" textValue="GitHub">
-                <Text>{"GitHub"}</Text>
+              <DropdownItem startContent={<LuGithub />} key="github" textValue={t("GitHub")}>
+                <Text>{t("GitHub")}</Text>
               </DropdownItem>
-              <DropdownItem startContent={<LuSmile />} key="feedback" textValue="Feedback">
-                <Text>{"Feedback"}</Text>
+              <DropdownItem startContent={<LuSmile />} key="feedback" textValue={t("Feedback")}>
+                <Text>{t("Feedback")}</Text>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
 
-          <Dropdown aria-label="Select a user option">
+          <Dropdown aria-label={t("Select a user option")}>
             <NavbarItem>
               <DropdownTrigger>
                 <div>
@@ -237,18 +240,18 @@ function NavbarContainer() {
               </DropdownTrigger>
             </NavbarItem>
             <DropdownMenu variant="faded">
-              <DropdownItem startContent={<LuUser />} key="profile" textValue="Profile">
+              <DropdownItem startContent={<LuUser />} key="profile" textValue={t("Profile")}>
                 <Link to="/user/profile">
                   <div className="w-full text-foreground">
-                    Profile
+                    {t("Profile")}
                   </div>
                 </Link>
               </DropdownItem>
               {_canAccess("teamAdmin", teamOwned) && (
-                <DropdownItem startContent={<LuSettings />} key="account" textValue="Team settings">
+                <DropdownItem startContent={<LuSettings />} key="account" textValue={t("Team settings")}>
                   <Link to={`/manage/${team?.id || teamOwned.id}/settings`}>
                     <div className="w-full text-foreground">
-                      Team settings
+                      {t("Team settings")}
                     </div>
                   </Link>
                 </DropdownItem>
@@ -259,15 +262,15 @@ function NavbarContainer() {
                 showDivider
                 key="theme"
                 onClick={() => setShowAppearance(true)}
-                textValue="UI Theme"
+                textValue={t("UI Theme")}
               >
                 <div className="w-full text-foreground">
-                  UI Theme
+                  {t("UI Theme")}
                 </div>
               </DropdownItem>
 
-              <DropdownItem startContent={<LuLogOut />} onClick={() => dispatch(logout())} textValue="Sign out">
-                Sign out
+              <DropdownItem startContent={<LuLogOut />} onClick={() => dispatch(logout())} textValue={t("Sign out")}>
+                {t("Sign out")}
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -297,7 +300,7 @@ function NavbarContainer() {
       <Modal isOpen={showAppearance} onClose={() => setShowAppearance(false)} width="500px">
         <ModalContent>
           <ModalHeader>
-            <Text size="h4">Chartbrew UI Appearance</Text>
+            <Text size="h4">{t("Chartbrew UI Appearance")}</Text>
           </ModalHeader>
           <ModalBody>
             <div className="flex flex-row justify-between gap-2">
@@ -311,7 +314,7 @@ function NavbarContainer() {
                 <CardBody>
                   <LuSun size={24} color="black" />
                   <Row align={"center"} className={"gap-2"}>
-                    <Text className={"!text-black"}>Light</Text>
+                    <Text className={"!text-black"}>{t("Light")}</Text>
                   </Row>
                 </CardBody>
               </Card>
@@ -326,7 +329,7 @@ function NavbarContainer() {
                 <CardBody>
                   <LuMoon size={24} color="white" />
                   <Row align={"center"} className={"gap-2"}>
-                    <Text className="!text-[#FFFFFF]">Dark</Text>
+                    <Text className="!text-[#FFFFFF]">{t("Dark")}</Text>
                   </Row>
                 </CardBody>
               </Card>
@@ -341,7 +344,7 @@ function NavbarContainer() {
                 <CardBody>
                   <LuContrast size={24} color={isDark ? "white" : "black"} />
                   <Row align={"center"} className={"gap-2"}>
-                    <Text h5 className={isDark ? "text-white" : "text-black"}>System</Text>
+                    <Text h5 className={isDark ? "text-white" : "text-black"}>{t("System")}</Text>
                   </Row>
                 </CardBody>
               </Card>
@@ -352,7 +355,7 @@ function NavbarContainer() {
               variant="bordered"
               onClick={() => setShowAppearance(false)}
             >
-              Close
+              {t("Close")}
             </Button>
           </ModalFooter>
         </ModalContent>

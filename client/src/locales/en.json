@@ -9,5 +9,29 @@
     "settings": "Project Settings",
     "dashboard": "Dashboard",
     "connections": "Connections"
+  },
+  "navbar": {
+    "Home": "Home",
+    "Changelog": "Changelog",
+    "Updates": "Updates",
+    "Select a help option": "Select a help option",
+    "Resources": "Resources",
+    "Join our Discord": "Join our Discord",
+    "Roadmap": "Roadmap",
+    "Blog tutorials": "Blog tutorials",
+    "Documentation": "Documentation",
+    "API Reference": "API Reference",
+    "GitHub": "GitHub",
+    "Feedback": "Feedback",
+    "Select a user option": "Select a user option",
+    "Profile": "Profile",
+    "Team settings": "Team settings",
+    "UI Theme": "UI Theme",
+    "Sign out": "Sign out",
+    "Chartbrew UI Appearance": "Chartbrew UI Appearance",
+    "Light": "Light",
+    "Dark": "Dark",
+    "System": "System",
+    "Close": "Close"
   }
 } 

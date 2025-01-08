@@ -4,6 +4,7 @@ import {
 } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
 import { LuClipboardCheck, LuClipboardCopy, LuShieldCheck, LuTrash } from "react-icons/lu";
+import { useTranslation } from 'react-i18next';
 
 import {
   updateUser, deleteUser, requestEmailUpdate, updateEmail, selectUser, get2faAppCode, verify2faApp, get2faMethods, remove2faMethod
@@ -45,6 +46,7 @@ function EditUserForm() {
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
@@ -354,7 +356,9 @@ function EditUserForm() {
 
       {backupCodes && (
         <>
-          <Text>{"Save these backup codes in a safe place as we only show them once. You can use them to access your account if you lose access to your authenticator app."}</Text>
+          <Text>
+            {t('Save these backup codes in a safe place as we only show them once. You can use them to access your account if you lose access to your authenticator app.')}
+          </Text>
           <Spacer y={1} />
           <div className="flex flex-row flex-wrap gap-1">
             {backupCodes?.map((code) => (
@@ -369,7 +373,7 @@ function EditUserForm() {
             endContent={codesCopied ? <LuClipboardCheck /> : <LuClipboardCopy />}
             onClick={_onCopyCodes}
           >
-            {codesCopied ? "Copied" : "Copy codes"}
+            {codesCopied ? t('Copied') : t('Copy codes')}
           </Button>
           <Spacer y={1} />
         </>

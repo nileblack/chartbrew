@@ -9,6 +9,7 @@ import AceEditor from "react-ace";
 import toast from "react-hot-toast";
 import { LuCheck, LuChevronRight, LuInfo, LuPencilLine, LuPlay, LuPlus, LuTrash } from "react-icons/lu";
 import { useParams } from "react-router";
+import { useTranslation } from 'react-i18next';
 
 import "ace-builds/src-min-noconflict/mode-javascript";
 import "ace-builds/src-min-noconflict/theme-tomorrow";
@@ -49,6 +50,7 @@ function MongoQueryBuilder(props) {
   const params = useParams();
   const dispatch = useDispatch();
   const stateDrs = useSelector((state) => selectDataRequests(state, params.datasetId));
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (dataRequest) {
@@ -213,7 +215,7 @@ function MongoQueryBuilder(props) {
           <Spacer y={4} />
           <Row align="center">
             <Text b>
-              {"Enter your mongodb query here"}
+              {t('Enter your mongodb query here')}
             </Text>
             <Spacer x={0.5} />
             <Tooltip

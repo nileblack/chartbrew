@@ -9,5 +9,29 @@
     "settings": "项目设置",
     "dashboard": "仪表盘",
     "connections": "数据连接"
+  },
+  "navbar": {
+    "Home": "首页",
+    "Changelog": "更新日志",
+    "Updates": "更新",
+    "Select a help option": "选择帮助选项",
+    "Resources": "资源",
+    "Join our Discord": "加入Discord",
+    "Roadmap": "路线图",
+    "Blog tutorials": "博客教程",
+    "Documentation": "文档",
+    "API Reference": "API参考",
+    "GitHub": "GitHub",
+    "Feedback": "反馈",
+    "Select a user option": "选择用户选项",
+    "Profile": "个人资料",
+    "Team settings": "团队设置",
+    "UI Theme": "界面主题",
+    "Sign out": "退出登录",
+    "Chartbrew UI Appearance": "Chartbrew界面外观",
+    "Light": "浅色",
+    "Dark": "深色",
+    "System": "系统",
+    "Close": "关闭"
   }
 } 
