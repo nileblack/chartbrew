@@ -1,7 +1,7 @@
 import cookie from "react-cookies";
 import { API_HOST } from "../config/settings";
 
-export function generateQuery(description, schema) {
+export function generateQuery(description, connection) {
   const token = cookie.load("brewToken");
   if (!token) {
     return Promise.reject(new Error("No authentication token found"));
@@ -15,7 +15,7 @@ export function generateQuery(description, schema) {
     },
     body: JSON.stringify({
       description,
-      schema,
+      connection,
     }),
   })
     .then((response) => {

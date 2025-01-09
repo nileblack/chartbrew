@@ -7,7 +7,7 @@ import { LuPlay } from "react-icons/lu";
 import Text from "../../../components/Text";
 import { generateQuery } from "../../../actions/ai";
 
-function AiQuery({ schema, query, updateQuery, type }) {
+function AiQuery({ connection, schema, query, updateQuery, type }) {
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
   const [queryOptions, setQueryOptions] = useState([]);
@@ -24,7 +24,7 @@ function AiQuery({ schema, query, updateQuery, type }) {
     }
 
     setLoading(true);
-    generateQuery(description, schema)
+    generateQuery(description, connection)
       .then((response) => {
         setQueryOptions(response.query.data.queries);
         toast.success("Queries generated successfully!");

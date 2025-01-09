@@ -7,13 +7,13 @@ module.exports = (app) => {
   */
   app.post("/openai/generate-query", verifyToken, async (req, res) => {
     try {
-      const { description, schema } = req.body;
+      const { description, connection } = req.body;
       
-      if (!description || !schema) {
+      if (!description || !connection) {
         return res.status(400).json({ error: "Missing required parameters" });
       }
 
-      const query = await openaiConnector.generateSqlQuery(description, schema);
+      const query = await openaiConnector.generateSqlQuery(description, connection);
       return res.status(200).json({ query });
     } catch (error) {
       console.error("Error generating query:", error);

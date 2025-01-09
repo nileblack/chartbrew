@@ -354,6 +354,7 @@ function SqlBuilder(props) {
               <Row>
                 <div className="w-full">
                   <AiQuery
+                    connection={connection}
                     schema={connection.schema}
                     query={sqlRequest.query}
                     updateQuery={(query) => _onChangeQuery(query, true)}
