@@ -1109,6 +1109,8 @@ class ConnectionController {
       
       // Process each table
       const tableDescriptions = {};
+
+      let tableCount = 0;
       for (const table of tables) {
         try {
           const description = await dbConnection.getQueryInterface().describeTable(table);
@@ -1124,7 +1126,13 @@ class ConnectionController {
           }));
 
           const aiDescription = await openaiConnector.generateTableDescription(table, fields);
-          tableDescriptions[table] = aiDescription;
+          tableDescriptions[table] = aiDescription.description;
+          const commentedFields = Object.entries(description).map(([fieldName, field]) => ({
+            ...field,
+            comment: aiDescription.fields.find(f => f.name === fieldName)?.comment,
+          }));
+          console.log("commentedFields", commentedFields);
+          existingSchema.description[table] = commentedFields;
         } catch (error) {
           console.error(`Error analyzing table ${table}:`, error);
           tableDescriptions[table] = "";
@@ -1136,7 +1144,7 @@ class ConnectionController {
         ...existingSchema,
         tableDescriptions
       };
-
+      console.log("updatedSchema", updatedSchema);
       // Save results
       await db.Connection.update(
         { 
