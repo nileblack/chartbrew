@@ -413,7 +413,7 @@ function SqlBuilder(props) {
             <Button
               endContent={<LuPlus />}
               isLoading={savingQuery}
-              onClick={_onSaveQueryConfirmation}
+              onPress={_onSaveQueryConfirmation}
               variant="flat"
               size="sm"
             >
@@ -426,7 +426,7 @@ function SqlBuilder(props) {
                 <Button
                   variant="flat"
                   endContent={<LuCheck />}
-                  onClick={_onUpdateSavedQuery}
+                  onPress={_onUpdateSavedQuery}
                   isLoading={updatingSavedQuery}
                   size="sm"
                 >
@@ -541,14 +541,14 @@ function SqlBuilder(props) {
           <ModalFooter>
             <Button
               variant="bordered"
-              onClick={() => setSaveQueryModal(false)}
+              onPress={() => setSaveQueryModal(false)}
             >
               Close
             </Button>
             <Button
               disabled={!savedQuerySummary}
               endContent={<LuCheck />}
-              onClick={_onSaveQuery}
+              onPress={_onSaveQuery}
               color="primary"
             >
               Save the query
