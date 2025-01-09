@@ -165,7 +165,9 @@ COLUMNS: ${fields.map(f => `name: ${f.name}, type: ${f.type}, primaryKey: ${f.is
     async generateTableDescription(tableName, fields) {
         try {
             // First, generate comments for all fields with complete context
-            const commentGenerationPrompt = TABLE_COMMENT_PROMPT(tableName, fields);
+            const language = "chinese";
+            const tableSummary = fields.map(f => `${f.name} (${f.type})${f.isPrimary ? ' PRIMARY KEY' : ''}${f.required ? ' NOT NULL' : ''}${f.defaultValue ? ` DEFAULT ${f.defaultValue}` : ''} - ${f.comment || ''}`).join('\n');
+            const commentGenerationPrompt = TABLE_COMMENT_PROMPT(tableName, tableSummary, language);
 
             const commentResponse = await this.openai.chat.completions.create({
                 ...this.defaultConfig,

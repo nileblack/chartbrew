@@ -1,8 +1,5 @@
-const SQL_GENERATION_PROMPT = (tableSummaryString, description, dbType, language) => `Based on the following relevant schema information:
-
-${tableSummaryString}
-
-Generate a SQL query for this request: ${description}
+const SQL_GENERATION_PROMPT = (tableSummaryString, description, dbType, language) => `You are a expert SQL query generator.
+you are given a request to generate a sql query and a schema of the database.
 
 work flow :
 step one: generate 2-3 sql queries
@@ -40,16 +37,20 @@ Please return a JSON array with 2-3 valid SQL queries that best match the reques
 IMPORTANT: 
 - Verify that every field and table used in the queries exists in the schema tables
 - Include the fields object to document which fields are used from each table
-- DO NOT return any other text or comments, just the JSON array`;
+- DO NOT return any other text or comments, just the JSON array
 
-const TABLE_COMMENT_PROMPT = (tableName, fields) => `For the table "${tableName}", please analyze all fields and generate appropriate field descriptions.
+Based on the following relevant schema information:
+
+${tableSummaryString}
+
+Generate a SQL query for this request: ${description}`;
+
+const TABLE_COMMENT_PROMPT = (tableName, tableSummary, language) => `For the table "${tableName}", please analyze all fields and generate appropriate field descriptions.
 Please consider the relationships and context between all fields when generating descriptions.
-Return a JSON object where keys are field names and values are their descriptions in Chinese.
+Return a JSON object where keys are field names and values are their descriptions in ${language}.
 
 Complete table structure:
-${fields.map(f =>
-    `${f.name} (${f.type})${f.isPrimary ? ' PRIMARY KEY' : ''}${f.required ? ' NOT NULL' : ''}${f.defaultValue ? ` DEFAULT ${f.defaultValue}` : ''}${f.comment ? ` - Current comment: ${f.comment}` : ''}`
-).join('\n')}
+${tableSummary}
 
 Example response format:
 {
@@ -61,7 +62,7 @@ IMPORTANT:
 - Provide descriptions for ALL fields
 - Consider the relationships between fields
 - If a field already has a comment, you can improve it if necessary
-- Descriptions should be clear and professional in Chinese`;
+- Descriptions should be clear and professional in ${language}`;
 
 const TABLE_DESCRIPTION_PROMPT = (tableName, fieldDescriptions) => `Based on the following database table structure:
 
