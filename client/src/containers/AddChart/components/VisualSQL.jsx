@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteItem, Button, Chip, Code, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Popover, PopoverContent, PopoverTrigger, Radio, RadioGroup, Select, SelectItem } from "@nextui-org/react"
+import { Alert, Autocomplete, AutocompleteItem, Button, Chip, Code, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Popover, PopoverContent, PopoverTrigger, Radio, RadioGroup, Select, SelectItem } from "@nextui-org/react"
 import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { LuPlus, LuX } from "react-icons/lu"
@@ -224,6 +224,8 @@ function VisualSQL({ schema, query, updateQuery, type }) {
 
     setAst(newAst);
     _onUpdateQuery(newAst);
+
+    setQueryError(false);
   };
 
   const _onChangeJoin = () => {
@@ -306,7 +308,7 @@ function VisualSQL({ schema, query, updateQuery, type }) {
       if (joinTable && joinTable !== withTable && !processedTables.includes(joinTable)) {
         processedTables.push(joinTable);
         joinColumns = joinColumns
-          .concat(Object.keys(schema.description[joinTable])
+          .concat(Object.keys(schema?.description[joinTable])
           .map((column) => ({
             table: joinTable,
             column
@@ -396,16 +398,16 @@ function VisualSQL({ schema, query, updateQuery, type }) {
     const selectedColumnNames = ast.columns.map(col => `${col.expr.table?.value}.${col.expr.column}`);
 
     flattenFrom(ast.from).forEach((fromItem) => {
-      if (!processedTables.includes(fromItem.table) && schema.description[fromItem.table]) {
+      if (!processedTables.includes(fromItem.table) && schema?.description[fromItem.table]) {
         processedTables.push(fromItem.table);
-        const tableColumns = Object.keys(schema.description[fromItem.table])
+        const tableColumns = Object.keys(schema?.description[fromItem.table])
           .map((column) => `${fromItem.as || fromItem.table}.${column}`)
           .filter((fullColumnName) => !selectedColumnNames.includes(fullColumnName));
         availableColumns = availableColumns.concat(tableColumns);
       }
-      if (!processedTables.includes(fromItem.joinTable) && schema.description[fromItem.joinTable]) {
+      if (!processedTables.includes(fromItem.joinTable) && schema?.description[fromItem.joinTable]) {
         processedTables.push(fromItem.joinTable);
-        const joinTableColumns = Object.keys(schema.description[fromItem.joinTable])
+        const joinTableColumns = Object.keys(schema?.description[fromItem.joinTable])
           .map((column) => `${fromItem.joinTableAs || fromItem.joinTable}.${column}`)
           .filter((fullColumnName) => !selectedColumnNames.includes(fullColumnName));
         availableColumns = availableColumns.concat(joinTableColumns);
@@ -436,20 +438,20 @@ function VisualSQL({ schema, query, updateQuery, type }) {
 
     let allColumns = [];
     flattenFrom(ast.from).forEach((fromItem) => {
-      if (schema.description[fromItem.table]) {
-        const tableColumns = Object.keys(schema.description[fromItem.table])
+      if (schema?.description[fromItem.table]) {
+        const tableColumns = Object.keys(schema?.description[fromItem.table])
           .map((column) => ({
             name: `${fromItem.as || fromItem.table}.${column}`,
-            type: schema.description[fromItem.table][column].type,
+            type: schema?.description[fromItem.table][column].type,
             table: { value: fromItem.as || fromItem.table, type: type === "mysql" ? "backticks_quote_string" : "single_quote_string" }
           }));
         allColumns = allColumns.concat(tableColumns);
       }
-      if (schema.description[fromItem.joinTable]) {
-        const joinTableColumns = Object.keys(schema.description[fromItem.joinTable])
+      if (schema?.description[fromItem.joinTable]) {
+        const joinTableColumns = Object.keys(schema?.description[fromItem.joinTable])
           .map((column) => ({
             name: `${fromItem.joinTableAs || fromItem.joinTable}.${column}`,
-            type: schema.description[fromItem.joinTable][column].type,
+            type: schema?.description[fromItem.joinTable][column].type,
             table: { value: fromItem.joinTableAs || fromItem.joinTable, type: type === "mysql" ? "backticks_quote_string" : "single_quote_string" }
           }));
         allColumns = allColumns.concat(joinTableColumns);
@@ -649,29 +651,29 @@ function VisualSQL({ schema, query, updateQuery, type }) {
     _onUpdateQuery("");
   };
 
-  if (queryError) {
+  if (queryError && query) {
     return (
       <Container className={"flex flex-col gap-4"}>
-        <div className="bg-warning-100 p-4 rounded-md flex flex-col gap-2">
-          <div className="text-warning-6000">
-            We could not parse your query. Modify the query manually or reset by pressing the button below.
-          </div>
-          <div>
-            <Button
-              variant="faded"
-              color="secondary"
-              size="sm"
-              onClick={() => _onResetQuery()}
-            >
-              Reset query
-            </Button>
-          </div>
-        </div>
+        <Alert
+          color="primary"
+          title="We could not parse your query"
+          description="Modify the query manually or restart the query from here."
+          variant="bordered"
+        >
+          <Button
+            color="primary"
+            size="sm"
+            onPress={() => _onResetQuery()}
+            className="mt-2"
+          >
+            Restart query
+          </Button>
+        </Alert>
       </Container>
     );
   }
 
-  if (!ast?.from) {
+  if (!ast?.from || !schema) {
     return (
       <Container className={"flex flex-col gap-4"}>
         <Autocomplete
@@ -977,7 +979,7 @@ function VisualSQL({ schema, query, updateQuery, type }) {
                     size="sm"
                     disallowEmptySelection
                   >
-                    {Object.keys(schema.description?.[viewJoin.joinTable] || {}).map((column) => (
+                    {Object.keys(schema?.description?.[viewJoin.joinTable] || {}).map((column) => (
                       <SelectItem
                         key={column}
                         textValue={column}
