@@ -46,5 +46,14 @@
     "Database schema not available": "数据库架构不可用",
     "Could not generate queries": "无法生成查询",
     "Queries generated successfully!": "查询生成成功！"
+  },
+  "userDashboard": {
+    "Home": "首页",
+    "Loading your space": "加载您的空间",
+    "Dashboards": "仪表盘",
+    "Connections": "数据连接",
+    "Datasets": "数据集",
+    "Integrations": "集成",
+    "Team settings": "团队设置"
   }
 } 

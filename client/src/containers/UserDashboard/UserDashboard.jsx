@@ -10,6 +10,7 @@ import {
 import {
   LuChevronDown, LuDatabase, LuLayoutGrid, LuPlug, LuPuzzle, LuSettings, LuUsers,
 } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
 
 import { relog } from "../../slices/user";
 import { cleanErrors as cleanErrorsAction } from "../../actions/error";
@@ -32,6 +33,8 @@ import DashboardList from "./DashboardList";
   The user dashboard with all the teams and projects
 */
 function UserDashboard(props) {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`userDashboard.${key}`);
   const { cleanErrors } = props;
 
   const team = useSelector(selectTeam);
@@ -138,8 +141,8 @@ function UserDashboard(props) {
     return (
       <div style={styles.container(height)}>
         <Container sm>
-          <Row justify="center" align="center">
-            <CircularProgress aria-label="Loading" size="xl" />
+          <Row align="center" justify="center">
+            <Text size="lg" className={"text-gray-400"}>{t("Loading your space")}</Text>
           </Row>
         </Container>
       </div>
@@ -207,35 +210,35 @@ function UserDashboard(props) {
                   <ListboxItem
                     key="projects"
                     startContent={<LuLayoutGrid size={24} />}
-                    textValue="Dashboards"
+                    textValue={t("Dashboards")}
                     color={_getActiveMenu() === "" ? "primary" : "default"}
                     className={_getActiveMenu() === "" ? "bg-content2 text-primary" : "text-foreground"}
                     onClick={() => navigate("/")}
                   >
-                    <span className="text-lg">Dashboards</span>
+                    <span className="text-lg">{t("Dashboards")}</span>
                   </ListboxItem>
                   {_canAccess("teamAdmin", team.TeamRoles) && (
                     <ListboxItem
                       key="connections"
                       startContent={<LuPlug size={24} />}
-                      textValue="Connections"
+                      textValue={t("Connections")}
                       color={_getActiveMenu() === "connections" ? "primary" : "default"}
                       className={_getActiveMenu() === "connections" ? "bg-content2 text-primary connection-tutorial" : "connection-tutorial"}
                       onClick={() => navigate("/connections")}
                     >
-                      <span className="text-lg">Connections</span>
+                      <span className="text-lg">{t("Connections")}</span>
                     </ListboxItem>
                   )}
                   {_canAccess("projectEditor", team.TeamRoles) && (
                     <ListboxItem
                       key="datasets"
                       startContent={<LuDatabase size={24} />}
-                      textValue="Datasets"
+                      textValue={t("Datasets")}
                       color={_getActiveMenu() === "datasets" ? "primary" : "default"}
                       className={_getActiveMenu() === "datasets" ? "bg-content2 text-primary dataset-tutorial" : "dataset-tutorial"}
                       onClick={() => navigate("/datasets")}
                     >
-                      <span className="text-lg">Datasets</span>
+                      <span className="text-lg">{t("Datasets")}</span>
                     </ListboxItem>
                   )}
                   {_canAccess("teamAdmin", team.TeamRoles) && (
@@ -243,24 +246,24 @@ function UserDashboard(props) {
                       key="integrations"
                       showDivider={_canAccess("teamAdmin", team.TeamRoles)}
                       startContent={<LuPuzzle size={24} />}
-                      textValue="Integrations"
+                      textValue={t("Integrations")}
                       color={_getActiveMenu() === "integrations" ? "primary" : "default"}
                       className={_getActiveMenu() === "integrations" ? "bg-content2 text-primary dataset-tutorial" : "dataset-tutorial"}
                       onClick={() => navigate("/integrations")}
                     >
-                      <span className="text-lg">Integrations</span>
+                      <span className="text-lg">{t("Integrations")}</span>
                     </ListboxItem>
                   )}
                   {_canAccess("teamAdmin", team.TeamRoles) && (
                     <ListboxItem
                       key="teamSettings"
                       startContent={<LuSettings size={24} />}
-                      textValue="Team settings"
+                      textValue={t("Team settings")}
                       color={"default"}
                       className={"text-foreground team-settings-tutorial"}
                       onClick={() => navigate(`/manage/${team.id}/settings`)}
                     >
-                      <span className="text-lg">Team settings</span>
+                      <span className="text-lg">{t("Team settings")}</span>
                     </ListboxItem>
                   )}
                 </Listbox>
@@ -288,7 +291,7 @@ function UserDashboard(props) {
             </Row>
             <Spacer y={1} />
             <Row align="center" justify="center">
-              <Text size="lg" className={"text-gray-400"}>Loading your space</Text>
+              <Text size="lg" className={"text-gray-400"}>{t("Loading your space")}</Text>
             </Row>
           </>
         )}

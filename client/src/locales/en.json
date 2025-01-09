@@ -46,5 +46,14 @@
     "Database schema not available": "Database schema not available",
     "Could not generate queries": "Could not generate queries",
     "Queries generated successfully!": "Queries generated successfully!"
+  },
+  "userDashboard": {
+    "Home": "Home",
+    "Loading your space": "Loading your space",
+    "Dashboards": "Dashboards",
+    "Connections": "Connections",
+    "Datasets": "Datasets",
+    "Integrations": "Integrations",
+    "Team settings": "Team settings"
   }
 } 
