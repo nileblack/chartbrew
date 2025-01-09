@@ -33,5 +33,18 @@
     "Dark": "Dark",
     "System": "System",
     "Close": "Close"
+  },
+  "aiQuery": {
+    "AI Query Generator": "AI Query Generator",
+    "Describe what you want to query in natural language:": "Describe what you want to query in natural language:",
+    "Example: Show me the total number of users registered in the last 30 days": "Example: Show me the total number of users registered in the last 30 days",
+    "Generate Query": "Generate Query",
+    "Generated Queries:": "Generated Queries:",
+    "Confidence:": "Confidence:",
+    "Use This Query": "Use This Query",
+    "Please enter a description of what you want to query": "Please enter a description of what you want to query",
+    "Database schema not available": "Database schema not available",
+    "Could not generate queries": "Could not generate queries",
+    "Queries generated successfully!": "Queries generated successfully!"
   }
 } 

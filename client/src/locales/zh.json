@@ -33,5 +33,18 @@
     "Dark": "深色",
     "System": "系统",
     "Close": "关闭"
+  },
+  "aiQuery": {
+    "AI Query Generator": "AI查询生成器",
+    "Describe what you want to query in natural language:": "用自然语言描述你想查询的内容：",
+    "Example: Show me the total number of users registered in the last 30 days": "示例：显示最近30天注册的用户总数",
+    "Generate Query": "生成查询",
+    "Generated Queries:": "生成的查询：",
+    "Confidence:": "置信度：",
+    "Use This Query": "使用此查询",
+    "Please enter a description of what you want to query": "请输入你想查询的描述",
+    "Database schema not available": "数据库架构不可用",
+    "Could not generate queries": "无法生成查询",
+    "Queries generated successfully!": "查询生成成功！"
   }
 } 
