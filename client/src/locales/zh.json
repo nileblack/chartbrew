@@ -55,5 +55,19 @@
     "Datasets": "数据集",
     "Integrations": "集成",
     "Team settings": "团队设置"
+  },
+  "dashboardList": {
+    "Create dashboard": "创建仪表盘",
+    "Create": "创建",
+    "Search dashboards": "搜索仪表盘",
+    "No dashboards here": "这里没有仪表盘",
+    "Team only": "仅团队",
+    "Rename": "重命名",
+    "Delete": "删除",
+    "Rename dashboard": "重命名仪表盘",
+    "Delete dashboard": "删除仪表盘",
+    "Dashboard members": "仪表盘成员",
+    "Charts": "图表",
+    "Dashboard name": "仪表盘名称"
   }
 } 

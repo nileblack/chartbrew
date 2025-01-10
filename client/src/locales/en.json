@@ -55,5 +55,19 @@
     "Datasets": "Datasets",
     "Integrations": "Integrations",
     "Team settings": "Team settings"
+  },
+  "dashboardList": {
+    "Create dashboard": "Create dashboard",
+    "Create": "Create",
+    "Search dashboards": "Search dashboards",
+    "No dashboards here": "No dashboards here",
+    "Team only": "Team only",
+    "Rename": "Rename",
+    "Delete": "Delete",
+    "Rename dashboard": "Rename dashboard",
+    "Delete dashboard": "Delete dashboard",
+    "Dashboard members": "Dashboard members",
+    "Charts": "Charts",
+    "Dashboard name": "Dashboard name"
   }
 } 

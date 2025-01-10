@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { LuChartNoAxesColumnIncreasing, LuEllipsis, LuLayoutGrid, LuPencilLine, LuPlus, LuSearch, LuTable, LuTrash, LuUsers } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import { getTeams, saveActiveTeam, selectTeam, selectTeamMembers } from "../../slices/team";
 import canAccess from "../../config/canAccess";
@@ -17,6 +18,9 @@ import { removeProject, selectProjects, updateProject } from "../../slices/proje
 import ProjectForm from "../../components/ProjectForm";
 
 function DashboardList() {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`dashboardList.${key}`);
+
   const [addProject, setAddProject] = useState(false);
   const [search, setSearch] = useState({});
   const [viewMode, setViewMode] = useState("grid");
@@ -153,14 +157,14 @@ function DashboardList() {
                 endContent={<LuPlus />}
                 className="create-dashboard-tutorial"
               >
-                <span className="hidden md:block">Create dashboard</span>
-                <span className="md:hidden">Create</span>
+                <span className="hidden md:block">{t("Create dashboard")}</span>
+                <span className="md:hidden">{t("Create")}</span>
               </Button>
             </div>
           )}
           <Input
             type="text"
-            placeholder="Search dashboards"
+            placeholder={t("Search dashboards")}
             variant="bordered"
             endContent={<LuSearch />}
             onChange={(e) => setSearch({ ...search, [team.id]: e.target.value })}
@@ -213,17 +217,17 @@ function DashboardList() {
                         onClick={() => _onEditProject(project)}
                         startContent={<LuPencilLine />}
                         showDivider
-                        textValue="Rename"
+                        textValue={t("Rename")}
                       >
-                        Rename
+                        {t("Rename")}
                       </DropdownItem>
                       <DropdownItem
                         onClick={() => _onDeleteProject(project)}
                         startContent={<LuTrash />}
                         color="danger"
-                        textValue="Delete"
+                        textValue={t("Delete")}
                       >
-                        Delete
+                        {t("Delete")}
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
@@ -244,7 +248,7 @@ function DashboardList() {
                   )}
                   {_getProjectMembers(project)?.length === 0 && (
                     <Chip variant="flat" size="sm">
-                      Team only
+                      {t("Team only")}
                     </Chip>
                   )}
                   <div className="flex flex-row items-center gap-1 text-sm">
@@ -259,7 +263,7 @@ function DashboardList() {
           {_getFilteredProjects().length === 0 && (
             <div>
               <span className="text-foreground-400 italic">
-                {"No dashboards here"}
+                {t("No dashboards here")}
               </span>
             </div>
           )}
@@ -274,17 +278,17 @@ function DashboardList() {
           isStriped
         >
           <TableHeader>
-            <TableColumn key="name">Dashboard name</TableColumn>
+            <TableColumn key="name">{t("Dashboard name")}</TableColumn>
             <TableColumn key="members">
               <div className="flex flex-row items-end gap-1">
                 <LuUsers />
-                <span>Dashboard members</span>
+                <span>{t("Dashboard members")}</span>
               </div>
             </TableColumn>
             <TableColumn key="charts">
               <div className="flex flex-row items-end justify-center gap-1">
                 <LuChartNoAxesColumnIncreasing />
-                <span>Charts</span>
+                <span>{t("Charts")}</span>
               </div>
             </TableColumn>
             <TableColumn key="actions" align="center" hideHeader />
@@ -311,7 +315,7 @@ function DashboardList() {
                     )}
                     {_getProjectMembers(project)?.length === 0 && (
                       <Chip variant="flat" size="sm">
-                        Team only
+                        {t("Team only")}
                       </Chip>
                     )}
                   </div>
@@ -326,7 +330,7 @@ function DashboardList() {
                 <TableCell key="actions">
                   {_canAccess("teamAdmin", team.TeamRoles) && (
                     <div className="flex flex-row items-center justify-end gap-1">
-                      <Tooltip content="Rename dashboard">
+                      <Tooltip content={t("Rename dashboard")}>
                         <Button
                           isIconOnly
                           variant="light"
@@ -337,7 +341,7 @@ function DashboardList() {
                           <LuPencilLine />
                         </Button>
                       </Tooltip>
-                      <Tooltip content="Delete dashboard">
+                      <Tooltip content={t("Delete dashboard")}>
                         <Button
                           isIconOnly
                           color="danger"
@@ -359,7 +363,7 @@ function DashboardList() {
             <TableBody>
               <TableRow>
                 <TableCell key="name" className="p-0 pt-2">
-                  <span className="italic text-default-500">No dashboards here</span>
+                  <span className="italic text-default-500">{t("No dashboards here")}</span>
                 </TableCell>
                 <TableCell key="members" align="center" />
                 <TableCell key="charts" align="center" />
