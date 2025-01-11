@@ -69,5 +69,24 @@
     "Dashboard members": "仪表盘成员",
     "Charts": "图表",
     "Dashboard name": "仪表盘名称"
+  },
+  "projectDashboard": {
+    "Edit access": "编辑访问权限",
+    "Users with project access": "具有项目访问权限的用户",
+    "Add filter": "添加筛选",
+    "Edit dashboard layout": "编辑仪表盘布局",
+    "Schedule data updates for this dashboard": "设置此仪表盘的数据更新计划",
+    "Refresh data": "刷新数据",
+    "Refresh charts": "刷新图表",
+    "Refresh all charts": "刷新所有图表",
+    "Share dashboard": "分享仪表盘",
+    "Create a template": "创建模板",
+    "Export to Excel": "导出到 Excel",
+    "Export to Excel (.xlsx)": "导出到 Excel (.xlsx)",
+    "New!": "新功能!"
+  },
+  "integrations": {
+    "Integrations": "集成",
+    "Create integrations description": "创建可以在团队项目中使用的新集成。目前，这些集成主要用于图表警报和通知。"
   }
 } 

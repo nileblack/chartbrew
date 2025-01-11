@@ -69,5 +69,24 @@
     "Dashboard members": "Dashboard members",
     "Charts": "Charts",
     "Dashboard name": "Dashboard name"
+  },
+  "projectDashboard": {
+    "Edit access": "Edit access",
+    "Users with project access": "Users with project access",
+    "Add filter": "Add filter",
+    "Edit dashboard layout": "Edit dashboard layout",
+    "Schedule data updates for this dashboard": "Schedule data updates for this dashboard",
+    "Refresh data": "Refresh data",
+    "Refresh charts": "Refresh charts",
+    "Refresh all charts": "Refresh all charts",
+    "Share dashboard": "Share dashboard",
+    "Create a template": "Create a template",
+    "Export to Excel": "Export to Excel",
+    "Export to Excel (.xlsx)": "Export to Excel (.xlsx)",
+    "New!": "New!"
+  },
+  "integrations": {
+    "Integrations": "Integrations",
+    "Create integrations description": "Create new integrations that you can use across your team's projects. Currently, the integrations are mainly used for chart alerts and notifications."
   }
 } 

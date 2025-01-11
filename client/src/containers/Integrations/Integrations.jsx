@@ -4,7 +4,7 @@ import { connect, useSelector } from "react-redux";
 import {
   Spacer,
 } from "@nextui-org/react";
-
+import { useTranslation } from "react-i18next";
 
 import WebhookIntegrations from "./components/WebhookIntegrations";
 import {
@@ -17,6 +17,8 @@ import { selectTeam } from "../../slices/team";
 
 function Integrations(props) {
   const { integrations, getTeamIntegrations } = props;
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`integrations.${key}`);
 
   const team = useSelector(selectTeam);
   const initRef = useRef(false);
@@ -32,12 +34,12 @@ function Integrations(props) {
     <div>
       <Segment className="container mx-auto bg-background">
         <Row>
-          <Text size="h3">Integrations</Text>
+          <Text size="h3">{t("Integrations")}</Text>
         </Row>
         <Spacer y={1} />
         <Row>
           <Text>
-            {"Create new integrations that you can use across your team's projects. Currently, the integrations are mainly used for chart alerts and notifications."}
+            {t("Create integrations description")}
           </Text>
         </Row>
         <Spacer y={4} />

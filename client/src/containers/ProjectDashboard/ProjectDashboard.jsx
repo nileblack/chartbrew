@@ -25,6 +25,7 @@ import {
 import { WidthProvider, Responsive } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { useTranslation } from "react-i18next";
 
 import Chart from "../Chart/Chart";
 import { cleanErrors as cleanErrorsAction } from "../../actions/error";
@@ -86,6 +87,9 @@ const getFilterGroupsFromStorage = () => {
   Dashboard container (for the charts)
 */
 function ProjectDashboard(props) {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`projectDashboard.${key}`);
+
   const {
     cleanErrors, mobile,
   } = props;
@@ -623,7 +627,7 @@ function ProjectDashboard(props) {
                                   fullWidth
                                   className="hover:text-foreground"
                                 >
-                                  Edit access
+                                  {t("Edit access")}
                                 </Button>
                                 <Spacer y={2} />
                                 <Divider />
@@ -631,7 +635,7 @@ function ProjectDashboard(props) {
                               </div>
                             )}
                             <Text>
-                              {"Users with project access"}
+                              {t("Users with project access")}
                             </Text>
                             <Listbox aria-label="Select a user">
                               {projectMembers.map((member) => (
@@ -664,7 +668,7 @@ function ProjectDashboard(props) {
                     size="sm"
                     className="hidden sm:flex"
                   >
-                    {"Add filter"}
+                    {t("Add filter")}
                   </Button>
                   <Button
                     isIconOnly
@@ -741,7 +745,7 @@ function ProjectDashboard(props) {
                   {!mobile && (
                     <>
                       <Spacer x={0.5} />
-                      <Tooltip content="Edit dashboard layout" placement="bottom-end">
+                      <Tooltip content={t("Edit dashboard layout")} placement="bottom-end">
                         <Button
                           variant="light"
                           isIconOnly
@@ -757,7 +761,7 @@ function ProjectDashboard(props) {
                   )}
                   {_canAccess("projectEditor") && (
                     <>
-                      <Tooltip content="Schedule data updates for this dashboard" placement="bottom">
+                      <Tooltip content={t("Schedule data updates for this dashboard")} placement="bottom">
                         <Button
                           variant="light"
                           isIconOnly
@@ -775,7 +779,7 @@ function ProjectDashboard(props) {
 
                   <>
                     <Spacer x={2} />
-                    <Tooltip content="Refresh data" placement="bottom-start">
+                    <Tooltip content={t("Refresh data")} placement="bottom-start">
                       <Button
                         variant="ghost"
                         onClick={() => _onRefreshData()}
@@ -784,10 +788,10 @@ function ProjectDashboard(props) {
                         endContent={<LuRefreshCw />}
                         className="hidden sm:flex"
                       >
-                        Refresh charts
+                        {t("Refresh charts")}
                       </Button>
                     </Tooltip>
-                    <Tooltip content="Refresh all charts" placement="bottom-end">
+                    <Tooltip content={t("Refresh all charts")} placement="bottom-end">
                       <Button
                         variant="ghost"
                         isIconOnly
@@ -817,16 +821,16 @@ function ProjectDashboard(props) {
                         <DropdownItem
                           startContent={<LuShare />}
                           onPress={() => setShowShare(true)}
-                          endContent={<Chip size="sm" color="secondary" variant="flat" radius="sm">{"New!"}</Chip>}
+                          endContent={<Chip size="sm" color="secondary" variant="flat" radius="sm">{t("New!")}</Chip>}
                         >
-                          {"Share dashboard"}
+                          {t("Share dashboard")}
                         </DropdownItem>
                         {_canAccess("teamAdmin") && (
                           <DropdownItem
                             startContent={<LuCopyPlus />} 
                             onPress={() => setTemplateVisible(true)}
                           >
-                            {"Create a template"}
+                            {t("Create a template")}
                           </DropdownItem>
                         )}
                         {_canExport() && (
@@ -834,7 +838,7 @@ function ProjectDashboard(props) {
                             startContent={<LuFileDown />}
                             onPress={() => _openExport()}
                           >
-                            {"Export to Excel"}
+                            {t("Export to Excel")}
                           </DropdownItem>
                         )}
                       </DropdownMenu>
@@ -925,7 +929,7 @@ function ProjectDashboard(props) {
       <Modal isOpen={viewExport} closeButton onClose={() => setViewExport(false)} size="2xl" scrollBehavior="outside">
         <ModalContent>
           <ModalHeader>
-            <Text size="h3">Export to Excel (.xlsx)</Text>
+            <Text size="h3">{t("Export to Excel (.xlsx)")}</Text>
           </ModalHeader>
           <ModalBody>
             <ChartExport
