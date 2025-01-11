@@ -10,6 +10,7 @@ import _ from "lodash";
 import toast from "react-hot-toast";
 import { useParams } from "react-router";
 import { LuContact, LuFolderKey, LuInfo, LuStar, LuUser, LuX, LuCircleX } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
 
 import {
   getTeam, getTeamMembers, updateTeamRole, deleteTeamMember, selectTeam, selectTeamMembers,
@@ -26,6 +27,9 @@ import Segment from "../../components/Segment";
   Contains Pending Invites and All team members with functionality to delete/change role
 */
 function TeamMembers(props) {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`teamMembers.${key}`);
+
   const {
     cleanErrors, user, style, projects,
   } = props;
@@ -187,7 +191,7 @@ function TeamMembers(props) {
 
       <Segment className={"bg-content1"}>
         <Row>
-          <Text size="h4">{"Team members"}</Text>
+          <Text size="h4">{t("Team members")}</Text>
         </Row>
         <Spacer y={2} />
 
@@ -271,7 +275,7 @@ function TeamMembers(props) {
                                           <DropdownItem
                                             key="teamAdmin"
                                             textValue="Team Admin"
-                                            description={"Full access, but can't delete the team"}
+                                            description={t("Client admin description")}
                                             className="max-w-[400px]"
                                           >
                                             <Text>Team Admin</Text>
@@ -283,7 +287,7 @@ function TeamMembers(props) {
                                           <DropdownItem
                                             key="projectAdmin"
                                             textValue="Client admin"
-                                            description={"Can create, edit, and remove charts in assigned dashboards. The admins can also edit the tagged dataset configurations, including the query."}
+                                            description={t("Client admin description")}
                                             className="max-w-[400px]"
                                           >
                                             <Text>Client admin</Text>
@@ -295,7 +299,7 @@ function TeamMembers(props) {
                                           <DropdownItem
                                             key="projectEditor"
                                             textValue="Client editor"
-                                            description={"Can create, edit, and remove charts in assigned dashboards. The editors can also edit the tagged dataset configurations, but cannot edit the query."}
+                                            description={t("Client editor description")}
                                             className="max-w-[400px]"
                                           >
                                             <Text>Client editor</Text>
@@ -349,17 +353,17 @@ function TeamMembers(props) {
       <Modal isOpen={!!deleteMember} backdrop="blur" onClose={() => setDeleteMember(false)}>
         <ModalContent>
           <ModalHeader>
-            <Text size="h4">Are you sure you want to remove the user from the team?</Text>
+            <Text size="h4">{t("Are you sure to remove")}</Text>
           </ModalHeader>
           <ModalBody>
-            <p>{"This action will remove the user from the team and restrict them from accessing the dashboards."}</p>
+            <p>{t("Remove user warning")}</p>
           </ModalBody>
           <ModalFooter>
             <Button
               variant="bordered"
               onClick={() => setDeleteMember(false)}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               color="danger"
@@ -367,7 +371,7 @@ function TeamMembers(props) {
               onClick={() => _onDeleteTeamMember(deleteMember)}
               endContent={<LuX />}
             >
-              Remove
+              {t("Remove")}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -377,22 +381,22 @@ function TeamMembers(props) {
       <Modal isOpen={projectModal} onClose={() => setProjectModal(false)} size="4xl">
         <ModalContent>
           <ModalHeader>
-            <Text size="h4">Assign project access</Text>
+            <Text size="h4">{t("Assign project access")}</Text>
           </ModalHeader>
           <ModalBody>
             {changedMember && projectAccess[changedMember.id] && (
               <>
                 <Row>
-                  <Text>{"Tick the projects you want to give the user access to. The unticked projects cannot be accessed by this user."}</Text>
+                  <Text>{t("Project access description")}</Text>
                 </Row>
                 <Row wrap="wrap" align={"center"}>
-                  <Text>{"You are currently giving"}</Text>
+                  <Text>{t("You are currently giving")}</Text>
                   <Spacer x={1} />
                   <Code>{`${projectAccess[changedMember.id].role}`}</Code>
                   <Spacer x={1} />
                   <Text>{`access to ${changedMember.name}`}</Text>
                   <Spacer x={1} />
-                  <Text>{"for the following projects:"}</Text>
+                  <Text>{t("for the following projects")}</Text>
                 </Row>
                 <Spacer y={0.5} />
 
@@ -416,12 +420,12 @@ function TeamMembers(props) {
                 <Spacer y={1} />
 
                 <Row align="center">
-                  <Text size={"lg"} b>
-                    {"Data export permissions "}
+                  <Text size="lg" b>
+                    {t("Data export permissions")}
                   </Text>
                   <Spacer x={0.5} />
                   <Tooltip
-                    content="The data export can contain sensitive information from your queries that is not necessarily visible on your charts. Only allow the data export when you intend for the users to view this data."
+                    content={t("Data export tooltip")}
                   >
                     <div><LuInfo /></div>
                   </Tooltip>
@@ -431,7 +435,7 @@ function TeamMembers(props) {
                     isSelected={changedRole.canExport}
                     onChange={_onChangeExport}
                   >
-                    Allow data export
+                    {t("Allow data export")}
                   </Checkbox>
                 </Row>
               </>

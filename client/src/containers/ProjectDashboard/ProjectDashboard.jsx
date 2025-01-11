@@ -854,7 +854,7 @@ function ProjectDashboard(props) {
           <div className="flex flex-col justify-center pt-10">
             <Row justify="center" align="center">
               <span className="text-xl font-bold">
-                Welcome to your dashboard
+                {t("Welcome to your dashboard")}
               </span>
             </Row>
             <Spacer y={1} />
@@ -862,7 +862,9 @@ function ProjectDashboard(props) {
               <>
                 <Row justify="center" align="center">
                   <span>
-                    {"It looks empty over here. Let's create a chart to get started."}
+                    {t("It looks empty over here")}
+                    {". "}
+                    {t("Let's create a chart to get started")}
                   </span>
                 </Row>
                 <Spacer y={4} /><Row justify="center" align="center">
@@ -872,7 +874,7 @@ function ProjectDashboard(props) {
                     color="primary"
                     onClick={() => navigate(`/${params.teamId}/${params.projectId}/chart`)}
                   >
-                    Create a chart
+                    {t("Create a chart")}
                   </Button>
                 </Row>
               </>

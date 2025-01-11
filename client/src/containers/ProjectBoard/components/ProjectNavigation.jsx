@@ -13,6 +13,7 @@ import {
   LuTvMinimal, LuUser, LuUsers,
   LuVariable,
 } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
 
 import {
   dark, lightGray, primary, secondary
@@ -68,6 +69,9 @@ function ProjectNavigation(props) {
   const [projectSearch, setProjectSearch] = useState("");
 
   const { height } = useWindowSize();
+
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`projectNavigation.${key}`);
 
   const _onVersionClicked = () => {
     if (update && update.tag_name) {
@@ -145,7 +149,7 @@ function ProjectNavigation(props) {
               <PopoverContent className="max-w-[200px] max-h-[400px] px-2 py-4">
                 <div className="flex flex-col gap-2 overflow-y-auto">
                   <Input
-                    placeholder="Search"
+                    placeholder={t("Search")}
                     fullWidth
                     size="small"
                     variant="bordered"
@@ -193,7 +197,7 @@ function ProjectNavigation(props) {
                       variant="flat"
                       size="sm"
                     >
-                      Create a chart
+                      {t("Create a chart")}
                     </Button>
                   </Link>
                 )}
@@ -222,7 +226,7 @@ function ProjectNavigation(props) {
                   startContent={<LuLayoutGrid size={24} />}
                   className="pointer-events-none"
                 >
-                  Dashboard
+                  {t("Dashboard")}
                 </Button>
               )}
             </Link>
@@ -253,7 +257,7 @@ function ProjectNavigation(props) {
                     startContent={<LuTvMinimal size={24} />}
                     className="pointer-events-none dashboard-report-tutorial"
                   >
-                    Dashboard report
+                    {t("Dashboard report")}
                   </Button>
                 )}
               </LinkNext>
@@ -286,7 +290,7 @@ function ProjectNavigation(props) {
                       startContent={<LuSettings size={24} />}
                       className="pointer-events-none dashboard-settings-tutorial"
                     >
-                      Dashboard settings
+                      {t("Dashboard settings")}
                     </Button>
                   )}
                 </Link>
@@ -318,7 +322,7 @@ function ProjectNavigation(props) {
                       startContent={<LuUsers size={24} />}
                       className="pointer-events-none"
                     >
-                      Team members
+                      {t("Team members")}
                     </Button>
                   )}
                 </Link>
@@ -346,7 +350,7 @@ function ProjectNavigation(props) {
                       startContent={<LuPuzzle size={24} />}
                       className="pointer-events-none"
                     >
-                      Integrations
+                      {t("Integrations")}
                     </Button>
                   )}
                 </Link>
