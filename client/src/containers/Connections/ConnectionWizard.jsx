@@ -4,7 +4,7 @@ import { Button, Card, CardBody, CardFooter, CardHeader, Image, Input, Modal, Mo
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
-
+import { useTranslation } from "react-i18next";
 
 import Segment from "../../components/Segment";
 import availableConnections from "../../modules/availableConnections";
@@ -26,6 +26,9 @@ import { Link, useSearchParams } from "react-router-dom";
 import { generateInviteUrl } from "../../slices/team";
 
 function ConnectionWizard() {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`connectionWizard.${key}`);
+
   const [connectionSearch, setConnectionSearch] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [completionModal, setCompletionModal] = useState(false);
@@ -171,15 +174,15 @@ function ConnectionWizard() {
           {!newConnection && (
             <>
               <div className="flex flex-row items-center gap-2">
-                <span className="text-xl text-secondary font-semibold">Step 1:</span>
-                <span className="text-xl font-semibold">Select your datasource type</span>
+                <span className="text-xl text-secondary font-semibold">{t("Step 1")}</span>
+                <span className="text-xl font-semibold">{t("Select datasource type")}</span>
               </div>
               <Spacer y={4} />
               <Segment>
                 <div className="flex flex-row justify-between items-center flex-wrap gap-2">
                   <Input
                     endContent={<LuSearch />}
-                    placeholder="Search..."
+                    placeholder={t("Search")}
                     variant="bordered"
                     labelPlacement="outside"
                     className="max-w-[300px]"
@@ -213,7 +216,7 @@ function ConnectionWizard() {
                   ))}
                   {_filteredConnections.length === 0 && (
                     <div className="col-span-12">
-                      <p className="text-center text-gray-500">No connections found</p>
+                      <p className="text-center text-gray-500">{t("No connections found")}</p>
                     </div>
                   )}
                 </div>
@@ -222,8 +225,8 @@ function ConnectionWizard() {
               <Spacer y={8} />
               {selectedType && (
                 <div className="flex flex-row items-center gap-2">
-                  <span className="text-xl text-secondary font-semibold">Step 2:</span>
-                  <span className="text-xl font-semibold">Connect to your data source</span>
+                  <span className="text-xl text-secondary font-semibold">{t("Step 2")}</span>
+                  <span className="text-xl font-semibold">{t("Connect datasource")}</span>
                 </div>
               )}
             </>
@@ -234,7 +237,7 @@ function ConnectionWizard() {
               <Link to="/connections" className="text-xl text-secondary font-semibold">
                 <LuCircleArrowLeft size={24} />
               </Link>
-              <span className="text-xl font-semibold">Edit your connection</span>
+              <span className="text-xl font-semibold">{t("Edit connection")}</span>
             </div>
           )}
           <Spacer y={4} />
@@ -332,15 +335,15 @@ function ConnectionWizard() {
 
               <Card>
                 <CardHeader className="flex flex-col items-start">
-                  <p className="font-semibold">Missing the data source credentials?</p>
+                  <p className="font-semibold">{t("Missing credentials")}</p>
                 </CardHeader>
                 <CardBody>
                   <p className="text-sm text-gray-500">
-                    {"Someone from your engineering team can help you with this."}
+                    {t("Engineering help")}
                   </p>
                   <Spacer y={2} />
                   <p className="text-sm text-gray-500">
-                    Ask them to join your team with this link
+                    {t("Ask to join")}
                   </p>
                   <Spacer y={1} />
                   <Input
@@ -358,7 +361,7 @@ function ConnectionWizard() {
                     endContent={inviteCopied ? <LuClipboardCheck /> : <LuClipboard />}
                     onClick={() => _onCopyInviteUrl()}
                   >
-                    {inviteCopied ? "Copied to clipboard" : "Copy invite link"}
+                    {inviteCopied ? t("Copied to clipboard") : t("Copy invite link")}
                   </Button>
                 </CardFooter>
               </Card>
@@ -367,11 +370,11 @@ function ConnectionWizard() {
 
               <Card>
                 <CardHeader className="flex flex-col items-start">
-                  <p className="font-semibold">Check out our tutorials</p>
+                  <p className="font-semibold">{t("Check tutorials")}</p>
                 </CardHeader>
                 <CardBody>
                   <p className="text-sm text-gray-500">
-                    {"We have a number of tutorials that can help you get started with Chartbrew and learn more about the platform."}
+                    {t("Tutorials description")}
                   </p>
                 </CardBody>
                 <CardFooter>
@@ -381,7 +384,7 @@ function ConnectionWizard() {
                     fullWidth
                     endContent={<LuCompass />}
                   >
-                    Open the tutorials
+                    {t("Open tutorials")}
                   </Button>
                 </CardFooter>
               </Card>

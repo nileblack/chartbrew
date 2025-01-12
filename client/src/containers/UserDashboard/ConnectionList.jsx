@@ -3,6 +3,7 @@ import React, { useState } from "react"
 import { LuCalendarDays, LuEllipsis, LuInfo, LuPencilLine, LuPlus, LuSearch, LuTags, LuTrash } from "react-icons/lu"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import { selectTeam } from "../../slices/team"
 import canAccess from "../../config/canAccess"
@@ -14,6 +15,9 @@ import { selectProjects } from "../../slices/project"
 import { selectDatasets } from "../../slices/dataset"
 
 function ConnectionList() {
+  const { t: originalT } = useTranslation();
+  const t = (key) => originalT(`connectionList.${key}`);
+
   const [connectionSearch, setConnectionSearch] = useState("");
   const [connectionToEdit, setConnectionToEdit] = useState(null);
   const [connectionToDelete, setConnectionToDelete] = useState(null);
@@ -102,12 +106,12 @@ function ConnectionList() {
             onClick={() => navigate(`/${team.id}/connection/new`)}
             isDisabled={user.temporary}
           >
-            Create connection
+            {t("Create connection")}
           </Button>
         )}
         <Input
           type="text"
-          placeholder="Search connections"
+          placeholder={t("Search connections")}
           variant="bordered"
           endContent={<LuSearch />}
           className="max-w-[300px]"
@@ -118,20 +122,20 @@ function ConnectionList() {
       <Spacer y={4} />
       <Table shadow="none" isStriped className="border-1 border-solid border-content3 rounded-xl" aria-label="Connection list">
         <TableHeader>
-          <TableColumn key="name">Connection</TableColumn>
+          <TableColumn key="name">{t("Connection")}</TableColumn>
           <TableColumn key="tags" className="tutorial-tags">
             <div className="flex flex-row items-center gap-1">
               <LuTags />
-              <span>Tags</span>
+              <span>{t("Tags")}</span>
             </div>
           </TableColumn>
           <TableColumn key="created" textValue="Created">
             <div className="flex flex-row items-center gap-1">
               <LuCalendarDays />
-              <span>Created</span>
+              <span>{t("Created")}</span>
             </div>
           </TableColumn>
-          <TableColumn key="actions" align="center" hideHeader>Actions</TableColumn>
+          <TableColumn key="actions" align="center" hideHeader>{t("Actions")}</TableColumn>
         </TableHeader>
         <TableBody>
           {_getFilteredConnections()?.map((connection) => (
@@ -177,7 +181,7 @@ function ConnectionList() {
                     className="opacity-0 hover:opacity-100"
                     onClick={() => setConnectionToEdit(connection)}
                   >
-                    Add tag
+                    {t("Add tag")}
                   </Button>
                 )}
               </TableCell>
@@ -202,21 +206,21 @@ function ConnectionList() {
                           onClick={() => navigate(`/${team.id}/connection/${connection.id}`)}
                           startContent={<LuPencilLine />}
                         >
-                          Edit connection
+                          {t("Edit connection")}
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => setConnectionToEdit(connection)}
                           startContent={<LuTags />}
                           showDivider
                         >
-                          Edit tags
+                          {t("Edit tags")}
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => setConnectionToDelete(connection)}
                           startContent={<LuTrash />}
                           color="danger"
                         >
-                          Delete
+                          {t("Delete")}
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
@@ -232,20 +236,18 @@ function ConnectionList() {
       <Modal isOpen={connectionToDelete?.id} onClose={() => setConnectionToDelete(null)}>
         <ModalContent>
           <ModalHeader>
-            <div className="font-bold">Are you sure you want to delete this connection?</div>
+            <div className="font-bold">{t("Are you sure to delete")}</div>
           </ModalHeader>
           <ModalBody>
-            <div>
-              {"Just a heads-up that all the datasets and charts that use this connection will stop working. This action cannot be undone."}
-            </div>
+            <div>{t("Delete warning")}</div>
             {_getRelatedDatasets(connectionToDelete?.id).length === 0 && (
               <div className="flex flex-row items-center">
-                <div className="italic">No related datasets found</div>
+                <div className="italic">{t("No related datasets")}</div>
               </div>
             )}
             {_getRelatedDatasets(connectionToDelete?.id).length > 0 && (
               <div className="flex flex-row items-center">
-                <div>Related datasets:</div>
+                <div>{t("Related datasets")}:</div>
               </div>
             )}
             <div className="flex flex-row flex-wrap items-center gap-1">
@@ -270,7 +272,7 @@ function ConnectionList() {
               isSelected={deleteRelatedDatasets}
               size="sm"
             >
-              Delete related datasets
+              {t("Delete related datasets")}
             </Checkbox>
             <div className="flex flex-row items-center gap-1">
               <Button
@@ -278,7 +280,7 @@ function ConnectionList() {
                 onClick={() => setConnectionToDelete(null)}
                 size="sm"
               >
-                Cancel
+                {t("Cancel")}
               </Button>
               <Button
                 size="sm"
@@ -287,7 +289,7 @@ function ConnectionList() {
                 onClick={() => _onDeleteConnection()}
                 isLoading={deletingConnection}
               >
-                Delete
+                {t("Delete")}
               </Button>
             </div>
           </ModalFooter>
@@ -297,7 +299,7 @@ function ConnectionList() {
       <Modal isOpen={!!connectionToEdit} onClose={() => setConnectionToEdit(null)} size="xl">
         <ModalContent>
           <ModalHeader>
-            <div className="font-bold">Edit tags</div>
+            <div className="font-bold">{t("Edit tags title")}</div>
           </ModalHeader>
           <ModalBody>
             <div className="flex flex-row flex-wrap items-center gap-2">
@@ -326,7 +328,7 @@ function ConnectionList() {
               <div>
                 <LuInfo />
               </div>
-              {"Use tags to grant dashboard members access to these connections. Tagged connections can be used by members to create their own datasets within the associated dashboards."}
+              {t("Tags info")}
             </div>
           </ModalBody>
           <ModalFooter>
@@ -334,14 +336,14 @@ function ConnectionList() {
               variant="bordered"
               onClick={() => setConnectionToEdit(null)}
             >
-              Close
+              {t("Close")}
             </Button>
             <Button
               color="primary"
               onClick={() => _onEditConnectionTags()}
               isLoading={modifyingConnection}
             >
-              Save
+              {t("Save")}
             </Button>
           </ModalFooter>
         </ModalContent>

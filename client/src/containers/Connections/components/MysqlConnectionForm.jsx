@@ -6,6 +6,7 @@ import {
 } from "@nextui-org/react";
 import { FaExternalLinkSquareAlt } from "react-icons/fa";
 import AceEditor from "react-ace";
+import { useTranslation } from "react-i18next";
 
 import "ace-builds/src-min-noconflict/mode-json";
 import "ace-builds/src-min-noconflict/theme-tomorrow";
@@ -64,6 +65,9 @@ function MysqlConnectionForm(props) {
   const params = useParams();
   const initRef = useRef(null);
 
+  const { t: originalT } = useTranslation();
+  const t = (key, params = {}) =>  originalT(`mysqlConnectionForm.${key}`, params);
+
   useEffect(() => {
     if (editConnection?.id && !initRef.current) {
       initRef.current = true;
@@ -120,19 +124,19 @@ function MysqlConnectionForm(props) {
 
     if (!connection.name || connection.name.length > 24) {
       setTimeout(() => {
-        setErrors({ ...errors, name: "Please enter a name which is less than 24 characters" });
+        setErrors({ ...errors, name: t("Enter name") });
       }, 100);
       return;
     }
     if (formStyle === "form" && !connection.host) {
       setTimeout(() => {
-        setErrors({ ...errors, host: "Please enter a host name or IP address for your database" });
+        setErrors({ ...errors, host: t("Enter host") });
       }, 100);
       return;
     }
     if (formStyle === "string" && !connection.connectionString) {
       setTimeout(() => {
-        setErrors({ ...errors, connectionString: "Please enter a connection string first" });
+        setErrors({ ...errors, connectionString: t("Enter connection string") });
       }, 100);
       return;
     }
@@ -170,11 +174,11 @@ function MysqlConnectionForm(props) {
   const _selectRootCert = (e) => {
     const file = e.target.files[0];
     if (!isValidExtension(file.name)) {
-      setSslCertsErrors({ ...sslCertsErrors, sslCa: "Invalid file type. Try .crt or .pem" });
+      setSslCertsErrors({ ...sslCertsErrors, sslCa: t("Invalid file type") });
       return;
     }
     if (!isValidFileSize(file)) {
-      setSslCertsErrors({ ...sslCertsErrors, sslCa: "File size is too large. Max size is 8KB" });
+      setSslCertsErrors({ ...sslCertsErrors, sslCa: t("File too large") });
       return;
     }
 
@@ -184,11 +188,11 @@ function MysqlConnectionForm(props) {
   const _selectClientCert = (e) => {
     const file = e.target.files[0];
     if (!isValidExtension(file.name)) {
-      setSslCertsErrors({ ...sslCertsErrors, sslCert: "Invalid file type. Try .crt or .pem" });
+      setSslCertsErrors({ ...sslCertsErrors, sslCert: t("Invalid file type") });
       return;
     }
     if (!isValidFileSize(file)) {
-      setSslCertsErrors({ ...sslCertsErrors, sslCert: "File size is too large. Max size is 8KB" });
+      setSslCertsErrors({ ...sslCertsErrors, sslCert: t("File too large") });
       return;
     }
     setSslCerts({ ...sslCerts, sslCert: file });
@@ -197,11 +201,11 @@ function MysqlConnectionForm(props) {
   const _selectClientKey = (e) => {
     const file = e.target.files[0];
     if (!isValidExtension(file.name)) {
-      setSslCertsErrors({ ...sslCertsErrors, sslKey: "Invalid file type. Try .key" });
+      setSslCertsErrors({ ...sslCertsErrors, sslKey: t("Invalid key file") });
       return;
     }
     if (!isValidFileSize(file)) {
-      setSslCertsErrors({ ...sslCertsErrors, sslKey: "File size is too large. Max size is 8KB" });
+      setSslCertsErrors({ ...sslCertsErrors, sslKey: t("File too large") });
       return;
     }
     setSslCerts({ ...sslCerts, sslKey: file });
@@ -223,8 +227,8 @@ function MysqlConnectionForm(props) {
     <div className="p-4 bg-content1 border-1 border-solid border-content3 rounded-lg">
       <div>
         <p className="font-semibold">
-          {!editConnection && "Add a new MySQL connection"}
-          {editConnection && `Edit ${editConnection.name}`}
+          {!editConnection && t("Add new connection")}
+          {editConnection && t("Edit connection with name", { name: editConnection.name })}
         </p>
         <Spacer y={4} />
         <Row align="center" style={styles.formStyle}>
@@ -232,8 +236,8 @@ function MysqlConnectionForm(props) {
             selectedKey={formStyle}
             onSelectionChange={(key) => setFormStyle(key)}
           >
-            <Tab key="string" title="Connection string" />
-            <Tab key="form" title="Connection form" />
+            <Tab key="string" title={t("Connection string tab")} />
+            <Tab key="form" title={t("Connection form tab")} />
           </Tabs>
         </Row>
         <Spacer y={2} />
@@ -242,8 +246,8 @@ function MysqlConnectionForm(props) {
           <>
             <Row align="center">
               <Input
-                label="Name your connection"
-                placeholder="Enter a name that you can recognise later"
+                label={t("Name label")}
+                placeholder={t("Name placeholder")}
                 value={connection.name || ""}
                 onChange={(e) => {
                   setConnection({ ...connection, name: e.target.value });
@@ -263,13 +267,13 @@ function MysqlConnectionForm(props) {
             <Spacer y={2} />
             <Row align="center">
               <Input
-                label="Enter your MySQL connection string"
+                label={t("Enter MySQL connection string")}
                 placeholder={formStrings[subType].csPlaceholder}
+                description={t("Connection string description")}
                 value={connection.connectionString || ""}
                 onChange={(e) => {
                   setConnection({ ...connection, connectionString: e.target.value });
                 }}
-                description={formStrings[subType].csDescription}
                 variant="bordered"
                 fullWidth
               />
@@ -290,8 +294,8 @@ function MysqlConnectionForm(props) {
             <div className="grid grid-cols-12 gap-2">
               <div className="sm:col-span-12 md:col-span-8">
                 <Input
-                  label="Name your connection"
-                  placeholder="Enter a name that you can recognise later"
+                  label={t("Name label")}
+                  placeholder={t("Name placeholder")}
                   value={connection.name || ""}
                   onChange={(e) => {
                     setConnection({ ...connection, name: e.target.value });
@@ -319,8 +323,8 @@ function MysqlConnectionForm(props) {
               </div>
               <div className="sm:col-span-12 md:col-span-2">
                 <Input
-                  label="Port"
-                  placeholder="Optional, defaults to 3306"
+                  label={t("Port")}
+                  placeholder={t("Optional port")}
                   value={connection.port || ""}
                   onChange={(e) => {
                     setConnection({ ...connection, port: e.target.value });
@@ -385,7 +389,7 @@ function MysqlConnectionForm(props) {
             onChange={(e) => _onChangeSSL(e.target.checked)}
             size="sm"
           >
-            {"Enable SSL"}
+            {t("Enable SSL")}
           </Switch>
         </Row>
         {connection.ssl && (
@@ -404,11 +408,11 @@ function MysqlConnectionForm(props) {
                 selectionMode="single"
                 disallowEmptySelection
               >
-                <SelectItem key="require" textValue="Require">{"Require"}</SelectItem>
-                <SelectItem key="disable" textValue="Disable">{"Disable"}</SelectItem>
-                <SelectItem key="prefer" textValue="Prefer">{"Prefer"}</SelectItem>
-                <SelectItem key="verify-ca" textValue="Verify CA">{"Verify CA"}</SelectItem>
-                <SelectItem key="verify-full" textValue="Verify Full">{"Verify Full"}</SelectItem>
+                <SelectItem key="require" textValue="Require">{t("Require")}</SelectItem>
+                <SelectItem key="disable" textValue="Disable">{t("Disable")}</SelectItem>
+                <SelectItem key="prefer" textValue="Prefer">{t("Prefer")}</SelectItem>
+                <SelectItem key="verify-ca" textValue="Verify CA">{t("Verify CA")}</SelectItem>
+                <SelectItem key="verify-full" textValue="Verify Full">{t("Verify Full")}</SelectItem>
               </Select>
             </Row>
             <Spacer y={2} />
@@ -498,7 +502,7 @@ function MysqlConnectionForm(props) {
             <Spacer y={2} />
             <Row align="center">
               <span className="text-sm">
-                {"Certificates are accepted in .crt, .pem, and .key formats"}
+                {t("Certificate formats")}
               </span>
             </Row>
           </>
