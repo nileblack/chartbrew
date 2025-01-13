@@ -1,6 +1,6 @@
 const multer = require("multer");
 const fs = require("fs");
-
+const SchemaVectorStore = require('../modules/vectorStore');
 const ConnectionController = require("../controllers/ConnectionController");
 const TeamController = require("../controllers/TeamController");
 const ProjectController = require("../controllers/ProjectController");
@@ -498,6 +498,45 @@ module.exports = (app) => {
       });
     } catch (error) {
       return res.status(500).json({ error: error.message });
+    }
+  });
+
+  /**
+   * Get training data for a connection
+   * GET /:teamId/connection/:connectionId/training-data
+   */
+  app.get('/teams/:teamId/connection/:connectionId/training-data', verifyToken, async (req, res) => {
+    try {
+      const { teamId } = req.params;
+      const { connectionId } = req.params;
+
+      // 获取向量存储中的所有文档
+      const filter = {
+        where: {
+          team_id: parseInt(teamId, 10),
+          connection_id: parseInt(connectionId, 10)
+        }
+      };
+
+      const documents = await SchemaVectorStore.getDocuments(filter);
+
+      // 格式化响应数据
+      const trainingData = documents.map(doc => ({
+        pageContent: doc.pageContent,
+        metadata: {
+          tableName: doc.metadata.tableName,
+          type: doc.metadata.type, // 可能是 'table_schema', 'sql_examples', 'field_purposes' 等
+          timestamp: doc.metadata.timestamp
+        }
+      }));
+
+      res.json(trainingData);
+    } catch (error) {
+      console.error('Error fetching training data:', error);
+      res.status(500).json({
+        error: 'Failed to fetch training data',
+        details: error.message
+      });
     }
   });
 

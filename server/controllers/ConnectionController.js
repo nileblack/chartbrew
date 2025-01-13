@@ -22,6 +22,7 @@ const drCacheController = require("./DataRequestCacheController");
 const RealtimeDatabase = require("../connections/RealtimeDatabase");
 const CustomerioConnection = require("../connections/CustomerioConnection");
 const openaiConnector = require("../modules/openaiConnector");
+const SchemaVectorStore = require('../modules/vectorStore');
 
 const getMomentObj = (timezone) => {
   if (timezone) {
@@ -1106,11 +1107,8 @@ class ConnectionController {
       
       // Get existing schema
       const existingSchema = connection.schema || {};
-      
-      // Process each table
       const tableDescriptions = {};
 
-      let tableCount = 0;
       for (const table of tables) {
         try {
           const description = await dbConnection.getQueryInterface().describeTable(table);
@@ -1125,13 +1123,46 @@ class ConnectionController {
             comment: field.comment,
           }));
 
+          // 获取 AI 生成的描述
           const aiDescription = await openaiConnector.generateTableDescription(table, fields);
           tableDescriptions[table] = aiDescription.description;
+
+          // 保存到向量库
+          await SchemaVectorStore.addDocument(
+            aiDescription.description,
+            {
+              team_id: connection.team_id,
+              connection_id: connection.id,
+              tableName: table,
+              type: 'table_schema',
+              timestamp: new Date().toISOString()
+            }
+          );
+
+          // 保存字段描述到向量库
+          for (const field of aiDescription.fields) {
+            await SchemaVectorStore.addDocument(
+              field.comment,
+              {
+                team_id: connection.team_id,
+                connection_id: connection.id,
+                tableName: table,
+                fieldName: field.name,
+                type: 'field_description',
+                timestamp: new Date().toISOString()
+              }
+            );
+          }
+
+          // 更新 schema
           const commentedFields = Object.entries(description).map(([fieldName, field]) => ({
             ...field,
             comment: aiDescription.fields.find(f => f.name === fieldName)?.comment,
           }));
-          console.log("commentedFields", commentedFields);
+          
+          if (!existingSchema.description) {
+            existingSchema.description = {};
+          }
           existingSchema.description[table] = commentedFields;
         } catch (error) {
           console.error(`Error analyzing table ${table}:`, error);
@@ -1142,9 +1173,10 @@ class ConnectionController {
       // Update schema with new descriptions
       const updatedSchema = {
         ...existingSchema,
-        tableDescriptions
+        tableDescriptions,
+        tables // 保存表名列表
       };
-      console.log("updatedSchema", updatedSchema);
+
       // Save results
       await db.Connection.update(
         { 
@@ -1160,6 +1192,7 @@ class ConnectionController {
         { schemaAnalysisStatus: 'failed' },
         { where: { id: connection.id } }
       );
+      throw error;
     }
   }
 }

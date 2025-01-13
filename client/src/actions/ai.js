@@ -56,4 +56,30 @@ export function generateTableDescription(teamId, connectionId, tableName) {
     .catch((err) => {
       return Promise.reject(err);
     });
+}
+
+export function getTrainingData(teamId, connectionId) {
+  const token = cookie.load("brewToken");
+  if (!token) {
+    return Promise.reject(new Error("No authentication token found"));
+  }
+
+  return fetch(`${API_HOST}/teams/${teamId}/connection/${connectionId}/training-data`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((err) => {
+          throw new Error(err.error || "Failed to fetch training data");
+        });
+      }
+      return response.json();
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
 } 

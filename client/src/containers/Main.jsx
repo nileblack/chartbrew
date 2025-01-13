@@ -33,6 +33,7 @@ import ConnectionList from "./UserDashboard/ConnectionList";
 import DatasetList from "./UserDashboard/DatasetList";
 import DashboardList from "./UserDashboard/DashboardList";
 import ConnectionExplorer from "./Connections/ConnectionExplorer";
+import TrainingData from "./Connections/TrainingData";
 
 const ProjectBoard = lazy(() => import("./ProjectBoard/ProjectBoard"));
 const Signup = lazy(() => import("./Signup"));
@@ -281,6 +282,11 @@ function Main(props) {
                 exact
                 path="/:teamId/connection/:connectionId/explorer"
                 element={<ConnectionExplorer />}
+              />
+              <Route
+                exact
+                path="/:teamId/connection/:connectionId/training-data"
+                element={<TrainingData />}
               />
             </Routes>
           </Suspense>

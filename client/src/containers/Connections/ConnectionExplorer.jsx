@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Spinner, Card, Input, Button } from "@nextui-org/react";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
@@ -13,11 +13,10 @@ import {
 } from "@nextui-org/react";
 import { selectConnections, getConnection, saveConnection, analyzeSchema, getSchemaAnalysisStatus } from "../../slices/connection";
 import Navbar from "../../components/Navbar";
-import { Link } from "react-router-dom";
-import { LuCircleArrowLeft, LuSearch, LuBrain, LuDatabase } from "react-icons/lu";
+import { LuCircleArrowLeft, LuSearch, LuBrain, LuDatabase, LuBookOpen } from "react-icons/lu";
 import { Spacer } from "@nextui-org/react";
 import { CardHeader, CardBody } from "@nextui-org/react";
-import { generateTableDescription } from "../../actions/ai";
+import { generateTableDescription, getTrainingData } from "../../actions/ai";
 import { toast } from "react-hot-toast";
 import { marked } from 'marked';
 
@@ -170,11 +169,36 @@ function ConnectionExplorer() {
       <Navbar hideTeam transparent />
       <div>
         <div className="p-4 sm:mr-96">
-          <div className="flex flex-row items-center gap-2">
-            <Link to="/connections" className="text-xl text-secondary font-semibold">
-              <LuCircleArrowLeft size={24} />
-            </Link>
-            <span className="text-xl font-semibold">Connection Explorer</span>
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center gap-2">
+              <Link to="/connections" className="text-xl text-secondary font-semibold">
+                <LuCircleArrowLeft size={24} />
+              </Link>
+              <span className="text-xl font-semibold">Connection Explorer</span>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                color="secondary"
+                variant="flat"
+                startContent={<LuDatabase />}
+                isLoading={isAnalyzing}
+                onPress={startSchemaAnalysis}
+                isDisabled={connection?.schemaAnalysisStatus === 'running'}
+              >
+                {isAnalyzing ? "Analyzing..." : "Analyze Database Structure"}
+              </Button>
+              <Link 
+                to={`/${params.teamId}/connection/${params.connectionId}/training-data`}
+              >
+                <Button
+                  color="warning"
+                  variant="flat"
+                  startContent={<LuBookOpen />}
+                >
+                  View Training Data
+                </Button>
+              </Link>
+            </div>
           </div>
           <Spacer y={4} />
 
@@ -222,27 +246,15 @@ function ConnectionExplorer() {
                   <div>
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-2xl font-semibold">{selectedTable}</h2>
-                      <div className="flex gap-2">
-                        <Button
-                          color="primary"
-                          variant="flat"
-                          startContent={<LuBrain />}
-                          isLoading={isGenerating}
-                          onPress={generateAIDescription}
-                        >
-                          Generate AI Description
-                        </Button>
-                        <Button
-                          color="secondary"
-                          variant="flat"
-                          startContent={<LuDatabase />}
-                          isLoading={isAnalyzing}
-                          onPress={startSchemaAnalysis}
-                          isDisabled={connection?.schemaAnalysisStatus === 'running'}
-                        >
-                          {isAnalyzing ? "Analyzing..." : "Analyze Database Structure"}
-                        </Button>
-                      </div>
+                      <Button
+                        color="primary"
+                        variant="flat"
+                        startContent={<LuBrain />}
+                        isLoading={isGenerating}
+                        onPress={generateAIDescription}
+                      >
+                        Generate AI Description
+                      </Button>
                     </div>
                     
                     {tableDescription && (

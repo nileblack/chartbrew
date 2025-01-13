@@ -6,3 +6,5 @@ models/.env
 .connectionFiles
 uploads
 data/
+chroma.log
+getting-started/
