@@ -93,7 +93,6 @@ class SchemaVectorStore {
           {connection_id: connection_id}
         ]},
         queryTexts: [query],
-        whereDocument: {"$contains": query},
         nResults: limit,
       });
 

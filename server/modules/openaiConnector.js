@@ -37,7 +37,7 @@ class OpenAIConnector {
             // await this.ensureInitialized(connection.schema);
 
             // // 使用 vectorStore 的 searchRelevant 方法
-            // const relevantDocs = await vectorStore.searchRelevant(description);
+            const relevantDocs = await vectorStore.similaritySearch(connection.team_id, connection.id, description, 5);
             const tableSummary = [];
             const schema = connection.schema;
             const getTableFields = (schema, tableName) => {
@@ -82,7 +82,8 @@ class OpenAIConnector {
                 tableSummary.push(`TABLE ${tableName} 
 COLUMNS: ${fields.map(f => `name: ${f.name}, type: ${f.type}, primaryKey: ${f.isPrimary ? 'true' : 'false'}, comment: ${f.comment ? ` - ${f.comment}` : ''}`).join('\n')}`);
             }
-            const tableSummaryString = tableSummary.join('\n\n');
+            console.log(relevantDocs);
+            const tableSummaryString = relevantDocs.length > 0 ? relevantDocs.map(doc => doc.pageContent).join('\n\n') : tableSummary.join('\n\n');
             const language = "chinese";
             // 构建提示
             const prompt = SQL_GENERATION_PROMPT(tableSummaryString, description, connection.type, language);
