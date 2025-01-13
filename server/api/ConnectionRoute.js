@@ -518,7 +518,7 @@ module.exports = (app) => {
           teamId,
           connectionId,
           query,
-          10  // 限制返回结果数量
+          10  
         );
         
         // 格式化响应数据

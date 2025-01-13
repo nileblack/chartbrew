@@ -84,15 +84,16 @@ class SchemaVectorStore {
 
   async similaritySearch(team_id, connection_id, query, limit = 10) {
     try {
-      const collection = this.collection;
 
-      // 执行相似度搜索
-      const results = await collection.query({
+        const collection = await this.getCollection();
+        console.log(query);
+        const results = await collection.query({
         where: {$and: [
           {team_id: team_id},
           {connection_id: connection_id}
         ]},
         queryTexts: [query],
+        whereDocument: {"$contains": query},
         nResults: limit,
       });
 

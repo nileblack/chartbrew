@@ -50,7 +50,7 @@ function TrainingData() {
         <div className="flex flex-row items-center justify-between mb-6">
           <div className="flex flex-row items-center gap-2">
             <Link 
-              to={`/teams/${params.teamId}/connections/${params.connectionId}/explorer`} 
+              to={`/${params.teamId}/connection/${params.connectionId}/explorer`} 
               className="text-xl text-secondary font-semibold"
             >
               <LuCircleArrowLeft size={24} />
