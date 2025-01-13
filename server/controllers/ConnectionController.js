@@ -1138,21 +1138,24 @@ class ConnectionController {
               timestamp: new Date().toISOString()
             }
           );
-
+          console.log("tableDescriptions", tableDescriptions);
           // 保存字段描述到向量库
-          for (const field of aiDescription.fields) {
-            await SchemaVectorStore.addDocument(
-              field.comment,
-              {
-                team_id: connection.team_id,
-                connection_id: connection.id,
-                tableName: table,
-                fieldName: field.name,
-                type: 'field_description',
-                timestamp: new Date().toISOString()
-              }
-            );
-          }
+          const fieldsContent = `# ${table}\n\n| Field | Type | Required | Primary Key | Auto Increment | Default Value | Description |
+| ----- | ---- | -------- | ----------- | ------------- | ------------- | ----------- |
+${aiDescription.fields.map(field => 
+  `| ${field.name} | ${field.type} | ${field.required} | ${field.isPrimary} | ${field.isAutoIncrement} | ${field.defaultValue || ''} | ${field.comment || ''} |`
+).join('\n')}`;
+          await SchemaVectorStore.addDocument(
+            fieldsContent,
+            {
+              team_id: connection.team_id,
+              connection_id: connection.id, 
+              tableName: table,
+              type: 'fields_description',
+              timestamp: new Date().toISOString()
+            }
+          );
+          console.log("fieldsContent", fieldsContent);
 
           // 更新 schema
           const commentedFields = Object.entries(description).map(([fieldName, field]) => ({
@@ -1169,7 +1172,6 @@ class ConnectionController {
           tableDescriptions[table] = "";
         }
       }
-
       // Update schema with new descriptions
       const updatedSchema = {
         ...existingSchema,
