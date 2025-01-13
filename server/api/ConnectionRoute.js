@@ -507,25 +507,43 @@ module.exports = (app) => {
    */
   app.get('/teams/:teamId/connection/:connectionId/training-data', verifyToken, async (req, res) => {
     try {
-      const { teamId } = req.params;
-      const { connectionId } = req.params;
+      const teamId = parseInt(req.params.teamId);
+      const connectionId = parseInt(req.params.connectionId);
+      const { query } = req.query;  // 获取查询参数
 
-      // 获取向量存储中的所有文档
-      const filter = {
-        where: {
-          team_id: parseInt(teamId, 10),
-          connection_id: parseInt(connectionId, 10)
-        }
-      };
+      // 如果有查询参数，添加到过滤条件中
+      if (query) {
+        // 使用向量存储的相似度搜索
+        const documents = await SchemaVectorStore.similaritySearch(
+          teamId,
+          connectionId,
+          query,
+          10  // 限制返回结果数量
+        );
+        
+        // 格式化响应数据
+        const trainingData = documents.map(doc => ({
+          pageContent: doc.pageContent,
+          metadata: {
+            tableName: doc.metadata.tableName,
+            type: doc.metadata.type,
+            timestamp: doc.metadata.timestamp,
+            score: doc.score  // 添加相似度分数
+          }
+        }));
 
-      const documents = await SchemaVectorStore.getDocuments(filter);
+        return res.json(trainingData);
+      }
+
+      // 如果没有查询参数，返回所有文档
+      const documents = await SchemaVectorStore.getDocuments(teamId, connectionId);
 
       // 格式化响应数据
       const trainingData = documents.map(doc => ({
         pageContent: doc.pageContent,
         metadata: {
           tableName: doc.metadata.tableName,
-          type: doc.metadata.type, // 可能是 'table_schema', 'sql_examples', 'field_purposes' 等
+          type: doc.metadata.type,
           timestamp: doc.metadata.timestamp
         }
       }));

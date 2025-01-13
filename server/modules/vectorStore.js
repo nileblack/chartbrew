@@ -28,6 +28,7 @@ class SchemaVectorStore {
       console.error("ChromaDB initialization error:", error);
       throw new Error("Failed to initialize ChromaDB: " + error.message);
     }
+
   }
 
   async getCollection() {
@@ -37,15 +38,14 @@ class SchemaVectorStore {
     return this.collection;
   }
 
-  async getDocuments(filter) {
+  async getDocuments(team_id, connection_id) {
     try {
       const collection = await this.getCollection();
-      
-      // 修改查询条件格式，使用 $and 操作符
+
       const where = {
         $and: [
-          { team_id: { $eq: filter.where.team_id } },
-          { connection_id: { $eq: filter.where.connection_id } }
+          { team_id: { $eq: team_id } },
+          { connection_id: { $eq: connection_id } }
         ]
       };
 
@@ -79,6 +79,38 @@ class SchemaVectorStore {
     } catch (error) {
       console.error("Error adding document:", error);
       throw new Error("Failed to add document to ChromaDB");
+    }
+  }
+
+  async similaritySearch(team_id, connection_id, query, limit = 10) {
+    try {
+      const collection = this.collection;
+
+      // 执行相似度搜索
+      const results = await collection.query({
+        where: {$and: [
+          {team_id: team_id},
+          {connection_id: connection_id}
+        ]},
+        queryTexts: [query],
+        nResults: limit,
+      });
+
+      // 如果没有结果，返回空数组
+      if (!results || !results.documents || !results.documents[0]) {
+        return [];
+      }
+
+      // 格式化返回结果
+      return results.documents[0].map((content, index) => ({
+        pageContent: content,
+        metadata: results.metadatas[0][index],
+        score: results.distances ? 1 - results.distances[0][index] : null
+      }));
+
+    } catch (error) {
+      console.error('Error in similarity search:', error);
+      throw error;
     }
   }
 }
