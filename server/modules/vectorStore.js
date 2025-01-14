@@ -1,4 +1,5 @@
 const { ChromaClient } = require("chromadb");
+const settings = process.env.NODE_ENV === "production" ? require("../settings") : require("../settings-dev");
 
 class SchemaVectorStore {
   constructor() {
@@ -12,11 +13,13 @@ class SchemaVectorStore {
 
     try {
       // 使用默认配置创建内存中的客户端实例
-      this.client = new ChromaClient();
+      this.client = new ChromaClient({
+        path: settings.chromadb.path
+      });
 
       // 获取或创建集合
       this.collection = await this.client.getOrCreateCollection({
-        name: "schema_store",
+        name: settings.chromadb.collection,
         metadata: {
           "description": "Store for database schema and training data"
         }

@@ -29,4 +29,8 @@ module.exports = {
     temperature: process.env.CB_OPENAI_TEMPERATURE || 0.7,
     maxTokens: process.env.CB_OPENAI_MAX_TOKENS || 2000,
   },
+  chromadb: {
+    path: process.env.CB_CHROMADB_PATH || "http://localhost:8000",
+    collection: process.env.CB_CHROMADB_COLLECTION || "schema_store"
+  }
 };
